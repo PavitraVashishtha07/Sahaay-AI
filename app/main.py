@@ -24,6 +24,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from pydantic import BaseModel
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    pass
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "data_layer"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "engines"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "security"))

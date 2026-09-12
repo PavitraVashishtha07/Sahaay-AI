@@ -28,6 +28,12 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import pandas as pd
 import httpx
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    pass
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "data_layer"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "engines"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "security"))
