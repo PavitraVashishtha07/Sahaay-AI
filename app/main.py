@@ -96,11 +96,17 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Enable CORS for direct frontend access
+# Enable CORS for frontend access (supports wildcard or comma-separated origins via ALLOWED_ORIGINS)
+raw_origins = os.getenv("ALLOWED_ORIGINS", "*").strip()
+if raw_origins == "*" or not raw_origins:
+    allowed_origins = ["*"]
+else:
+    allowed_origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=allowed_origins,
+    allow_credentials=True if allowed_origins != ["*"] else False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -432,7 +438,15 @@ def advance_onboarding(customer_id: str, req: OnboardingStepRequest):
     return res
 
 
-# Serve static web frontend if available
+# ==============================================================================
+# INTERNAL VERIFICATION SCAFFOLD ONLY — NOT PRODUCTION FRONTEND
+# ==============================================================================
+# The /dashboard and /app endpoints below serve a lightweight internal HTML/JS
+# scaffold for local smoke-testing and developer verification during hackathon
+# building. The production UI is built, deployed, and maintained separately by
+# the frontend team in their own repository. Do NOT mistake this for the real UI!
+# ==============================================================================
+
 _FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend", "public")
 _INDEX_HTML = os.path.join(_FRONTEND_DIR, "index.html")
 
@@ -443,9 +457,13 @@ if os.path.exists(_FRONTEND_DIR):
 @app.get("/dashboard", response_class=HTMLResponse)
 @app.get("/app", response_class=HTMLResponse)
 def serve_dashboard():
-    """Serves the Sahaay AI Interactive Intelligence & Decision Panel web interface."""
+    """
+    [INTERNAL VERIFICATION SCAFFOLD ONLY — NOT PRODUCTION FRONTEND]
+    Serves the internal verification scaffold for developer sanity checks.
+    The real production UI is hosted in a separate frontend repository.
+    """
     if os.path.exists(_INDEX_HTML):
         with open(_INDEX_HTML, "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
-    return HTMLResponse("<h2>Frontend building in progress. Please refresh shortly.</h2>")
+    return HTMLResponse("<h2>Frontend verification scaffold not built. Real production frontend is in separate repo.</h2>")
 

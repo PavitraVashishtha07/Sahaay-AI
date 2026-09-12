@@ -30,9 +30,10 @@ MANIFEST
 *.manifest
 *.spec
 
-# Installer logs
+# Installer and runtime logs
 pip-log.txt
 pip-delete-this-directory.txt
+logs/*.jsonl
 
 # Unit test / coverage reports
 htmlcov/
@@ -80,6 +81,8 @@ Thumbs.db
 *.sw?
 
 # Data & Large Files (GitHub has a strict 100MB per-file limit; transactions.csv is 162.5MB)
+# transactions.csv.gz (43MB) is committed to Git and automatically extracted on cloud container startup.
 data/transactions.csv
 data/*.parquet
 *.csv.gz
+!data/transactions.csv.gz

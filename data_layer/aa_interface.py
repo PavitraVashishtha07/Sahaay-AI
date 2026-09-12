@@ -24,17 +24,46 @@ import pandas as pd
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 
 
+def ensure_data_files_extracted():
+    """Ensures all compressed .csv.gz files in data/ are decompressed on cloud boot."""
+    if not os.path.exists(DATA_DIR):
+        return
+    import gzip, shutil
+    for item in os.listdir(DATA_DIR):
+        if item.endswith(".csv.gz"):
+            csv_name = item[:-3]  # strip .gz -> .csv
+            csv_path = os.path.join(DATA_DIR, csv_name)
+            gz_path = os.path.join(DATA_DIR, item)
+            if not os.path.exists(csv_path):
+                with gzip.open(gz_path, "rb") as f_in, open(csv_path, "wb") as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+
+
+# Run check on module load
+ensure_data_files_extracted()
+
+
 class ConsentError(Exception):
     """Raised when a request is made without valid, active consent."""
 
 
 def _load(table: str) -> pd.DataFrame:
     path = os.path.join(DATA_DIR, f"{table}.csv")
+    gz_path = os.path.join(DATA_DIR, f"{table}.csv.gz")
+
+    # If uncompressed CSV is missing in container/deployment, auto-extract from .csv.gz
+    if not os.path.exists(path) and os.path.exists(gz_path):
+        import gzip, shutil
+        with gzip.open(gz_path, "rb") as f_in, open(path, "wb") as f_out:
+            shutil.copyfileobj(f_in, f_out)
+
     if not os.path.exists(path):
         raise FileNotFoundError(
             f"{path} not found — run generate_synthetic_data.py first."
         )
     return pd.read_csv(path)
+
+
 
 
 def _check_consent(customer_id: str, consent_id: str) -> dict:
