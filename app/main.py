@@ -118,7 +118,7 @@ class ArbitrateRequest(BaseModel):
 
 class ChatRequest(BaseModel):
     message: str
-    language: Optional[str] = "en"
+    language: Optional[str] = None
 
 
 class OnboardingStepRequest(BaseModel):
@@ -358,8 +358,8 @@ def get_personas():
 def chat(customer_id: str, req: ChatRequest, request: Request, role: Optional[str] = None):
     """
     Section 5 & Security Gateway: Natural language customer interaction layer.
-    Extracts structured intent, pulls verified backend facts, and returns
-    a non-hallucinated response with audit logging.
+    Extracts structured intent via Gemini Flash / fallback, pulls verified backend facts,
+    and returns a non-hallucinated response with audit logging.
     """
     try:
         res = process_customer_message(customer_id, req.message, language=req.language)
@@ -373,14 +373,16 @@ def chat(customer_id: str, req: ChatRequest, request: Request, role: Optional[st
         return {
             "reply": res["reply"],
             "intent": res["intent"],
-            "path_used": res["path_used"],
             "language": res["language"],
+            "tts_supported": res.get("tts_supported", True),
+            "path_used": res["path_used"],
+            "facts_used": res.get("facts_used_keys", ["verified_backend_records"]),
             "confidence": res["confidence"],
-            "facts_used": res["facts_used"],
             "timestamp": res["timestamp"],
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @app.get("/admin/audit-log")

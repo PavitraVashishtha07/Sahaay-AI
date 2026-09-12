@@ -2,19 +2,24 @@
 Tests for Sahaay AI Conversational Layer (Section 5)
 Verifies:
 1. Exact EMI figure preservation (no invented/hallucinated numbers).
-2. Out-of-scope intent fallback to request_human_help.
-3. Strict sequential progression in Onboarding / KYC State Machine (no skipping steps).
-4. Multilingual response phrasing (English, Hindi, Gujarati).
-5. Grounding across all 5 supported flows with real backend data layers.
+2. Multi-language Intent Extraction (English, Hindi, Gujarati, Marathi, Tamil, Telugu, Bengali, Kannada, Punjabi, Malayalam).
+3. Hinglish free-form colloquial phrasing ("yaar mera EMI kab hai bhai").
+4. Out-of-curated-set language (Odia) extraction with tts_supported: False.
+5. Gemini-failure fallback (mock timeout/error to confirm regex extraction).
+6. Out-of-scope intent fallback to request_human_help.
+7. Strict sequential progression in Onboarding / KYC State Machine.
+8. Grounding across all 5 supported flows with real backend data layers.
 """
 
 import os
 import sys
+from unittest.mock import patch
 import pytest
 import pandas as pd
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "data_layer"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "engines"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "security"))
 
 from conversational_engine import (
     Intent,
@@ -23,6 +28,8 @@ from conversational_engine import (
     extract_intent,
     phrase_response,
     process_customer_message,
+    is_tts_supported,
+    CURATED_TTS_LANGUAGES,
     _fetch_emi_facts,
     _fetch_transaction_facts,
     _fetch_product_facts,
@@ -61,6 +68,7 @@ def test_check_emi_returns_exact_figure(customer_with_emi):
     assert res["intent"] == Intent.CHECK_EMI.value
     assert res["facts_used"]["has_emis"] is True
     assert res["facts_used"]["next_emi_amount"] == expected_amt
+    assert res["tts_supported"] is True
     
     # Exact amount must be present in string reply
     formatted_amt = f"{expected_amt:,.2f}"
@@ -76,17 +84,128 @@ def test_check_emi_hindi_gujarati_exact_figures(customer_with_emi):
     expected_amt = float(cust_emis.iloc[0]["amount_due"])
     formatted_amt = f"{expected_amt:,.2f}"
 
-    res_hi = process_customer_message(customer_with_emi, "मेरी ईएमआई कितनी है?", language="hi")
+    res_hi = process_customer_message(customer_with_emi, "मेरी ईएमआई कितनी है?")
     assert res_hi["intent"] == Intent.CHECK_EMI.value
+    assert res_hi["language"] == "hi"
+    assert res_hi["tts_supported"] is True
     assert formatted_amt in res_hi["reply"]
 
-    res_gu = process_customer_message(customer_with_emi, "મારો હપ્તો કેટલો છે?", language="gu")
+    res_gu = process_customer_message(customer_with_emi, "મારો હપ્તો કેટલો છે?")
     assert res_gu["intent"] == Intent.CHECK_EMI.value
+    assert res_gu["language"] == "gu"
+    assert res_gu["tts_supported"] is True
     assert formatted_amt in res_gu["reply"]
 
 
 # --------------------------------------------------------------------------
-# 2. Out-of-Scope Fallback to Request Human Help
+# 2. Hinglish Free-Form Colloquial Extraction & Exact Fact Grounding
+# --------------------------------------------------------------------------
+
+def test_hinglish_free_form_intent_and_exact_emi(customer_with_emi):
+    """
+    Verifies colloquial Hinglish ('yaar mera EMI kab hai bhai') extracts
+    intent: 'check_emi' and injects the exact backend-verified EMI figure.
+    """
+    emi_path = os.path.join(DATA_DIR, "emi_records.csv")
+    df = pd.read_csv(emi_path)
+    cust_emis = df[df["customer_id"] == customer_with_emi].sort_values("due_date", ascending=False)
+    expected_amt = float(cust_emis.iloc[0]["amount_due"])
+    formatted_amt = f"{expected_amt:,.2f}"
+
+    hinglish_queries = [
+        "yaar mera EMI kab hai bhai",
+        "bhai agla installment kitna dena hai",
+        "meri emi kitni baki hai batao na",
+    ]
+    for q in hinglish_queries:
+        res = process_customer_message(customer_with_emi, q)
+        assert res["intent"] == Intent.CHECK_EMI.value
+        assert res["tts_supported"] is True
+        assert formatted_amt in res["reply"], f"Exact figure {formatted_amt} missing from reply: {res['reply']}"
+
+
+# --------------------------------------------------------------------------
+# 3. Curated 10-Language Set Tests (Intent + Fact-Grounded Phrasing)
+# --------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "lang_code,message,expected_intent",
+    [
+        ("en", "How much is my next loan installment due?", Intent.CHECK_EMI.value),
+        ("hi", "मेरी अगली किस्त कितनी और कब देय है?", Intent.CHECK_EMI.value),
+        ("gu", "મારી આગામી લોનનો હપ્તો કેટલો છે?", Intent.CHECK_EMI.value),
+        ("mr", "माझा पुढील कर्जाचा हप्ता किती आणि कधी आहे?", Intent.CHECK_EMI.value),
+        ("bn", "আমার পরবর্তী ঋণের কিস্তি কত টাকা?", Intent.CHECK_EMI.value),
+        ("ta", "எனது அடுத்த கடன் தவணை எவ்வளவு?", Intent.CHECK_EMI.value),
+        ("te", "నా తదుపరి రుణ తవణ ఎంత మరియు ఎప్పుడు?", Intent.CHECK_EMI.value),
+        ("kn", "ನನ್ನ ಮುಂದಿನ ಸಾಲದ ಕಂತು ಎಷ್ಟು?", Intent.CHECK_EMI.value),
+        ("pa", "ਮੇਰੀ ਅਗਲੀ ਕਰਜ਼ੇ ਦੀ ਕਿਸ਼ਤ ਕਿੰਨੀ ਹੈ?", Intent.CHECK_EMI.value),
+        ("ml", "എന്റെ അടുത്ത ലോൺ ഇഎംഐ എത്രയാണ്?", Intent.CHECK_EMI.value),
+    ],
+)
+def test_curated_10_languages_end_to_end(customer_with_emi, lang_code, message, expected_intent):
+    """
+    Validates all 10 curated Indic/English languages:
+    1. Intent is extracted accurately.
+    2. Detected language or override matches expected.
+    3. tts_supported is True.
+    4. Exact verified backend numbers are included in the reply.
+    """
+    emi_path = os.path.join(DATA_DIR, "emi_records.csv")
+    df = pd.read_csv(emi_path)
+    cust_emis = df[df["customer_id"] == customer_with_emi].sort_values("due_date", ascending=False)
+    expected_amt = float(cust_emis.iloc[0]["amount_due"])
+    formatted_amt = f"{expected_amt:,.2f}"
+
+    res = process_customer_message(customer_with_emi, message, language=lang_code)
+    assert res["intent"] == expected_intent
+    assert res["language"] == lang_code
+    assert res["tts_supported"] is True
+    assert formatted_amt in res["reply"]
+    assert "facts_used_keys" in res
+    assert "emi_records.amount_due" in res["facts_used_keys"]
+
+
+# --------------------------------------------------------------------------
+# 4. Out-of-Curated-Set Language Test (Odia / Assamese)
+# --------------------------------------------------------------------------
+
+def test_out_of_curated_set_language_attempts_extraction_with_tts_false(customer_with_emi):
+    """
+    For an out-of-curated-set language (e.g. Odia 'or' or Assamese 'as'):
+    - Extraction & fact-grounded reply generation still attempt normally (not blocked).
+    - tts_supported is correctly returned as False (since browser voices are typically unavailable).
+    """
+    odia_query = "ମୋର ପରବର୍ତ୍ତୀ ଇଏମଆଇ କେତେ?"
+    res = process_customer_message(customer_with_emi, odia_query, language="or")
+    
+    assert res["intent"] == Intent.CHECK_EMI.value
+    assert res["language"] == "or"
+    assert res["tts_supported"] is False  # Must be False for out-of-curated-set
+    assert "facts_used" in res
+
+
+# --------------------------------------------------------------------------
+# 5. Gemini API Failure & Timeout Fallback Test
+# --------------------------------------------------------------------------
+
+def test_gemini_api_failure_falls_back_to_regex(customer_with_emi):
+    """
+    Simulates a Gemini API timeout or connection failure.
+    Confirms the engine gracefully falls back to deterministic regex extraction
+    and template phrasing without crashing or breaking the chat response.
+    """
+    with patch("conversational_engine._call_gemini_api", return_value=None):
+        res = process_customer_message(customer_with_emi, "Check my loan emi status please")
+        assert res["intent"] == Intent.CHECK_EMI.value
+        assert res["facts_used"]["has_emis"] is True
+        assert res["tts_supported"] is True
+        assert res["extractor"] == "regex_fallback"
+        assert "₹" in res["reply"] or "due" in res["reply"].lower()
+
+
+# --------------------------------------------------------------------------
+# 6. Out-of-Scope Fallback to Request Human Help
 # --------------------------------------------------------------------------
 
 def test_out_of_scope_routes_to_human_help(sample_customer_id):
@@ -104,7 +223,7 @@ def test_out_of_scope_routes_to_human_help(sample_customer_id):
 
 
 # --------------------------------------------------------------------------
-# 3. Onboarding State Machine Sequential Transitions
+# 7. Onboarding State Machine Sequential Transitions
 # --------------------------------------------------------------------------
 
 def test_onboarding_state_machine_cannot_skip_steps():
@@ -151,7 +270,7 @@ def test_onboarding_state_machine_cannot_skip_steps():
 
 
 # --------------------------------------------------------------------------
-# 4. Other Flows Grounding
+# 8. Other Flows Grounding
 # --------------------------------------------------------------------------
 
 def test_explain_transaction_flow(sample_customer_id):

@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
-import { Bot, Send, UserPlus, CheckCircle } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Bot, Send, UserPlus, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 
 interface Message {
   id: string;
   sender: "user" | "bot";
   text: string;
   intent?: string;
+  language?: string;
+  tts_supported?: boolean;
   facts_used?: any;
 }
 
@@ -21,11 +23,70 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ customerId, select
     {
       id: "welcome",
       sender: "bot",
-      text: "Namaste! I am your Sahaay AI financial companion. How may I assist you with your accounts, EMI schedules, or savings today?",
+      text: "Namaste! I am your Sahaay AI financial companion. How may I assist you with your accounts, EMI schedules, or savings today? (Click mic to speak)",
     },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [ttsEnabled, setTtsEnabled] = useState(true);
+  const recognitionRef = useRef<any>(null);
+
+  // Initialize Web SpeechRecognition
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const reco = new SpeechRecognition();
+        reco.continuous = false;
+        reco.interimResults = false;
+        reco.lang = selectedLanguage === "en" ? "en-IN" : `${selectedLanguage}-IN`;
+
+        reco.onstart = () => setIsRecording(true);
+        reco.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          setInput(transcript);
+          sendMessage(transcript);
+        };
+        reco.onerror = (event: any) => {
+          console.warn("ASR error:", event.error);
+          setIsRecording(false);
+        };
+        reco.onend = () => setIsRecording(false);
+        recognitionRef.current = reco;
+      }
+    }
+  }, [selectedLanguage]);
+
+  const toggleRecording = () => {
+    if (!recognitionRef.current) {
+      alert("Speech recognition is not supported in this browser. Please use text input.");
+      return;
+    }
+    if (isRecording) {
+      recognitionRef.current.stop();
+    } else {
+      try {
+        recognitionRef.current.lang = selectedLanguage === "en" ? "en-IN" : `${selectedLanguage}-IN`;
+        recognitionRef.current.start();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  const speakText = (text: string, langCode?: string) => {
+    if (!ttsEnabled || typeof window === "undefined" || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voices = window.speechSynthesis.getVoices();
+    const targetLang = (langCode || selectedLanguage || "en").toLowerCase();
+    const matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith(targetLang));
+    if (matchedVoice) utterance.voice = matchedVoice;
+    utterance.lang = matchedVoice ? matchedVoice.lang : "en-US";
+    utterance.rate = 0.95;
+    window.speechSynthesis.speak(utterance);
+  };
 
   const sendMessage = async (msgText?: string) => {
     const textToSend = msgText || input.trim();
@@ -44,7 +105,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ customerId, select
       const resp = await fetch(`http://127.0.0.1:8000/customers/${customerId}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: textToSend, language: selectedLanguage }),
+        body: JSON.stringify({ message: textToSend, language: selectedLanguage || undefined }),
       });
       if (resp.ok) {
         const data = await resp.json();
@@ -53,9 +114,15 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ customerId, select
           sender: "bot",
           text: data.reply,
           intent: data.intent,
+          language: data.language,
+          tts_supported: data.tts_supported,
           facts_used: data.facts_used,
         };
         setMessages((prev) => [...prev, botMsg]);
+
+        if (data.tts_supported) {
+          speakText(data.reply, data.language);
+        }
       } else {
         setMessages((prev) => [
           ...prev,
@@ -97,6 +164,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ customerId, select
           intent: "onboarding_kyc",
         },
       ]);
+      speakText(data.prompt, selectedLanguage);
     } catch (e) {}
   };
 
@@ -113,21 +181,34 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ customerId, select
           </div>
           <div>
             <h4 className="text-sm font-bold text-white flex items-center gap-2">
-              Sahaay Companion
+              Sahaay Voice Companion
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                Zero Hallucination
+                Gemini NLP + ASR/TTS
               </span>
             </h4>
             <p className="text-[11px] text-gray-400">Strictly grounded in backend financial facts</p>
           </div>
         </div>
 
-        <button
-          onClick={startKYC}
-          className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 transition-all flex items-center gap-1.5"
-        >
-          <UserPlus className="w-3.5 h-3.5 text-cyan-400" /> KYC Flow
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setTtsEnabled(!ttsEnabled)}
+            className={`p-1.5 rounded-lg border text-xs transition-all ${
+              ttsEnabled
+                ? "bg-indigo-900/40 border-indigo-500/40 text-indigo-300"
+                : "bg-gray-800 border-gray-700 text-gray-400"
+            }`}
+            title={ttsEnabled ? "TTS Enabled" : "TTS Muted"}
+          >
+            {ttsEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+          </button>
+          <button
+            onClick={startKYC}
+            className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 transition-all flex items-center gap-1.5"
+          >
+            <UserPlus className="w-3.5 h-3.5 text-cyan-400" /> KYC Flow
+          </button>
+        </div>
       </div>
 
       {/* Quick Prompt Chips */}
@@ -179,9 +260,16 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ customerId, select
             >
               <p className="leading-relaxed">{m.text}</p>
               {m.sender === "bot" && (
-                <div className="mt-2 pt-2 border-t border-gray-700/60 flex items-center justify-between text-[10px] text-cyan-400 font-mono">
+                <div className="mt-2 pt-2 border-t border-gray-700/60 flex items-center justify-between text-[10px] text-cyan-400 font-mono gap-2">
                   <span>Intent: {m.intent || "general"}</span>
-                  <span className="text-gray-400">Verified Backend Facts</span>
+                  {m.language && <span>Lang: {m.language.toUpperCase()}</span>}
+                  <button
+                    onClick={() => speakText(m.text, m.language)}
+                    className="text-gray-400 hover:text-white ml-auto"
+                    title="Read Aloud"
+                  >
+                    <Volume2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               )}
             </div>
@@ -196,9 +284,25 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ customerId, select
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="Ask in English, हिन्दी, or ગુજરાતી..."
+          placeholder="Speak or ask in English, हिन्दी, ગુજરાતી, தமிழ்..."
           className="flex-1 bg-gray-950 text-white placeholder-gray-500 text-sm px-4 py-2.5 rounded-xl border border-gray-700/80 focus:ring-2 focus:ring-indigo-500 outline-none"
         />
+
+        {/* Microphone ASR Button */}
+        <button
+          onClick={toggleRecording}
+          type="button"
+          className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+            isRecording
+              ? "bg-rose-600 border-rose-500 text-white animate-pulse"
+              : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700"
+          }`}
+          title={isRecording ? "Listening... Click to stop" : "Click to speak (Voice Input)"}
+        >
+          {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-cyan-400" />}
+        </button>
+
+        {/* Send Button */}
         <button
           onClick={() => sendMessage()}
           disabled={loading}

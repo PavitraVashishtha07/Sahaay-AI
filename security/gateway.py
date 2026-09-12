@@ -288,9 +288,18 @@ def check_anomalies_on_ingest(payload: dict) -> Tuple[List[dict], List[dict]]:
         return transactions, []
 
     df_txns["amount"] = pd.to_numeric(df_txns["amount"], errors="coerce").fillna(0.0)
-    mean_amt = df_txns["amount"].mean()
+    # Use median or trimmed mean so a single extreme outlier does not distort its own baseline
+    median_amt = float(df_txns["amount"].median())
+    trimmed_amounts = df_txns["amount"].drop(df_txns["amount"].idxmax()) if len(df_txns) > 3 else df_txns["amount"]
+    mean_amt = float(trimmed_amounts.mean()) if not trimmed_amounts.empty else median_amt
+    baseline_amt = min(median_amt, mean_amt) if median_amt > 0 else mean_amt
+
     credits = df_txns[df_txns["txn_type"] == "credit"]
-    mean_credit = credits["amount"].mean() if not credits.empty else mean_amt
+    if not credits.empty:
+        trimmed_credits = credits["amount"].drop(credits["amount"].idxmax()) if len(credits) > 3 else credits["amount"]
+        mean_credit = float(trimmed_credits.mean()) if not trimmed_credits.empty else float(credits["amount"].median())
+    else:
+        mean_credit = baseline_amt
 
     clean_txns = []
     quarantined = []
@@ -301,15 +310,15 @@ def check_anomalies_on_ingest(payload: dict) -> Tuple[List[dict], List[dict]]:
         is_anom = False
         reason = ""
 
-        # Check 1: 50x average transaction spike
-        if mean_amt > 0 and amt > 50 * mean_amt:
+        # Check 1: 50x baseline transaction spike
+        if baseline_amt > 0 and amt > 50 * baseline_amt:
             is_anom = True
-            reason = f"Transaction amount ₹{amt:,.2f} is >50x customer historical average (₹{mean_amt:,.2f})"
+            reason = f"Transaction amount ₹{amt:,.2f} is >50x customer baseline (₹{baseline_amt:,.2f})"
 
         # Check 2: 100x income credit spike
         if txn_type == "credit" and mean_credit > 0 and amt > 100 * mean_credit:
             is_anom = True
-            reason = f"Income credit amount ₹{amt:,.2f} is >100x customer historical credit average (₹{mean_credit:,.2f})"
+            reason = f"Income credit amount ₹{amt:,.2f} is >100x customer credit baseline (₹{mean_credit:,.2f})"
 
         if is_anom:
             quarantined.append(txn)

@@ -135,3 +135,28 @@ def test_revoke_consent_audit_and_status_reflection():
         df_con = pd.read_csv(con_path)
         df_con.loc[(df_con["customer_id"] == target_cust) & (df_con["consent_id"] == cid), "status"] = "ACTIVE"
         df_con.to_csv(con_path, index=False)
+
+
+def test_chat_endpoint_contract_with_optional_language():
+    """
+    Verifies POST /customers/{id}/chat works when 'language' is omitted from request,
+    and returns exact expected response schema with 'language' and 'tts_supported'.
+    """
+    res = client.post(
+        f"/customers/{CUSTOMER_ID}/chat",
+        json={"message": "When is my next EMI due and how much?"},
+        headers={"X-User-Role": "user"},
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert "reply" in data
+    assert "intent" in data
+    assert data["intent"] == "check_emi"
+    assert "language" in data
+    assert "tts_supported" in data
+    assert isinstance(data["tts_supported"], bool)
+    assert data["tts_supported"] is True
+    assert "path_used" in data
+    assert "facts_used" in data
+    assert "timestamp" in data
+

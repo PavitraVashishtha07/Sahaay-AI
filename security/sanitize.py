@@ -11,8 +11,9 @@ import re
 import unicodedata
 from typing import Tuple
 
-# High-risk prompt injection and jailbreak phrases (case-insensitive)
+# High-risk prompt injection and jailbreak phrases (case-insensitive & multilingual)
 INJECTION_PATTERNS = [
+    # English & Romanized
     r"ignore\s+(?:all\s+|previous\s+|prior\s+|above\s+|the\s+)*instructions?",
     r"disregard\s+(?:all\s+|previous\s+|prior\s+|the\s+)*(?:instructions?|rules?|prompts?)",
     r"forget\s+(?:all\s+|everything\s+|previous\s+|prior\s+|the\s+)*(?:instructions?|rules?|prompts?)",
@@ -24,9 +25,31 @@ INJECTION_PATTERNS = [
     r"show\s+(?:me\s+)?(?:the\s+)?system\s+prompt",
     r"approve\s+(?:the\s+)?loan\s+unconditionally",
     r"grant\s+admin\s+access",
+    
+    # Devanagari (Hindi / Marathi) prompt injections
+    r"(?:सारे|सभी|पिछले|पूर्व)\s*(?:निर्देश|नियम|आदेश)\s*(?:को\s*)?(?:अनदेखा|भूल|रद्द|इग्नोर)\s*(?:करो|करें|कीजिए)",
+    r"(?:सिस्टम\s*प्रॉम्प्ट|सिस्टम\s*कमांड|सुरक्षा\s*बायपास)",
+    r"(?:एडमिन\s*एक्सेस\s*दें|बिना\s*शर्त\s*ऋण\s*स्वीकृत\s*करें)",
+    r"(?:मागील\s*सर्व\s*सूचना\s*दुर्लक्षित\s*करा|सर्व\s*नियम\s*विसरा)",
+
+    # Bengali prompt injections
+    r"(?:সব|পূর্ববর্তী|আগের)\s*(?:নির্দেশ|নির্দেশাবলী|নিয়ম)\s*(?:উপেক্ষা|ভুলে\s*যান|বাতিল)\s*(?:করুন|করো)",
+    r"(?:সিস্টেম\s*প্রম্পট\s*দেখান|অ্যাডমিন\s*অ্যাক্সেস\s*দিন)",
+
+    # Tamil prompt injections
+    r"(?:முந்தைய|அனைத்து)\s*(?:வழிமுறைகளையும்|விதிகளையும்)\s*(?:புறக்கணிக்கவும்|மறந்துவிடுங்கள்)",
+    r"(?:கணினி\s*கட்டளை|நிர்வாக\s*அணுகல்\s*வழங்கு)",
+
+    # Telugu prompt injections
+    r"(?:మునుపటి|అన్ని)\s*(?:సూచనలను|నియమాలను)\s*(?:విస్మరించండి|మర్చిపోండి)",
+    r"(?:సిస్టమ్\s*ప్రాంప్ట్|అడ్మిన్\s*యాక్సెస్\s*ఇవ్వండి)",
+
+    # Gujarati prompt injections
+    r"(?:બધી|પાછલી)\s*(?:સૂચનાઓ|નિયમો)\s*(?:અવગણો|ભૂલી\s*જાઓ)",
 ]
 
 COMPILED_INJECTION_REGEX = [re.compile(p, re.IGNORECASE) for p in INJECTION_PATTERNS]
+
 
 # Code injection & markup patterns
 DANGEROUS_MARKUP = [

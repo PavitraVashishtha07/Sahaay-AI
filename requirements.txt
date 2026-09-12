@@ -8,3 +8,4 @@ scikit-learn
 xgboost
 shap
 pytest
+httpx

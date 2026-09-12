@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sahaay AI — Reference Voice Chat (ASR/TTS Handoff Demo)</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(22, 30, 49, 0.85);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --mic-active: #ef4444;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --bot-msg-bg: #1e293b;
+      --user-msg-bg: #2563eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, var(--bg) 80%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      height: 680px;
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.6);
+    }
+
+    .header-info h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .header-info p {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+    }
+
+    .status-badge {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      word-wrap: break-word;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: var(--user-msg-bg);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.bot {
+      align-self: flex-start;
+      background: var(--bot-msg-bg);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      border-bottom-left-radius: 4px;
+    }
+
+    .meta-tag {
+      font-size: 0.7rem;
+      margin-top: 6px;
+      color: var(--text-sub);
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-area {
+      padding: 16px;
+      border-top: 1px solid var(--card-border);
+      background: rgba(15, 23, 42, 0.7);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .text-input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      background: rgba(30, 41, 59, 0.8);
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .text-input:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .btn-send {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-send:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-mic {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-mic.recording {
+      background: var(--mic-active);
+      animation: pulse 1.2s infinite;
+    }
+
+    .toggle-tts {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 16px 12px 16px;
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 
+    =============================================================================
+    SAHAAY AI — REFERENCE VOICE CHAT IMPLEMENTATION (HANDOFF TEMPLATE)
+    =============================================================================
+    This single-file demo illustrates the exact frontend integration for:
+    1. ASR (Speech-to-Text) using the Web Speech API (webkitSpeechRecognition)
+    2. API communication with Sahaay AI backend (/customers/{id}/chat)
+    3. TTS (Text-to-Speech) using window.speechSynthesis with tts_supported checks
+    4. Graceful fallbacks for unsupported browsers or denied microphone permissions
+    =============================================================================
+  -->
+
+  <div class="container">
+    <div class="header">
+      <div class="header-info">
+        <h2>Sahaay AI Voice Assistant</h2>
+        <p>Zero-Hallucination Multilingual Companion</p>
+      </div>
+      <div id="statusBadge" class="status-badge">Ready</div>
+    </div>
+
+    <div id="chatBox" class="chat-box">
+      <div class="message bot">
+        Namaste! I am your Sahaay AI financial companion. You can speak or type in any Indian language (Hindi, Gujarati, Marathi, Tamil, Bengali, Hinglish, etc.).
+      </div>
+    </div>
+
+    <div class="toggle-tts">
+      <input type="checkbox" id="autoTtsToggle" checked />
+      <label for="autoTtsToggle">Auto-read response aloud (TTS)</label>
+    </div>
+
+    <div class="input-area">
+      <!-- Text fallback input (always available) -->
+      <input
+        type="text"
+        id="userInput"
+        class="text-input"
+        placeholder="Type or click mic to speak..."
+        autocomplete="off"
+      />
+      
+      <!-- Microphone button for ASR -->
+      <button id="micBtn" class="btn btn-mic" title="Click to Speak">
+        <svg id="micIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" x2="12" y1="19" y2="22"/>
+        </svg>
+      </button>
+
+      <!-- Send button -->
+      <button id="sendBtn" class="btn btn-send" title="Send message">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       CONFIGURATION & CLIENT STATE
+       ========================================================================= */
+    const API_BASE_URL = "http://127.0.0.1:8000";
+    const DEFAULT_CUSTOMER_ID = "cust_86838bd208"; // Replace with active customer ID
+
+    const chatBox = document.getElementById("chatBox");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const micBtn = document.getElementById("micBtn");
+    const statusBadge = document.getElementById("statusBadge");
+    const autoTtsToggle = document.getElementById("autoTtsToggle");
+
+    let isRecording = false;
+    let recognition = null;
+
+    /* =========================================================================
+       STEP 1: ASR (SPEECH-TO-TEXT) INITIALIZATION & GRACEFUL FALLBACK
+       ========================================================================= */
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      // Continuous = false stops after the user finishes speaking a sentence
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      // Default to Indian English / Hindi recognition (browser will capture speech accurately)
+      recognition.lang = "hi-IN"; 
+
+      recognition.onstart = () => {
+        isRecording = true;
+        micBtn.classList.add("recording");
+        statusBadge.textContent = "Listening...";
+        statusBadge.style.color = "#f87171";
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        userInput.value = transcript;
+        sendMessage(transcript);
+      };
+
+      recognition.onerror = (event) => {
+        console.warn("ASR Warning/Error:", event.error);
+        statusBadge.textContent = "Mic Idle";
+        statusBadge.style.color = "#60a5fa";
+        isRecording = false;
+        micBtn.classList.remove("recording");
+      };
+
+      recognition.onend = () => {
+        isRecording = false;
+        micBtn.classList.remove("recording");
+        statusBadge.textContent = "Ready";
+        statusBadge.style.color = "#60a5fa";
+      };
+    } else {
+      console.warn("Web SpeechRecognition is not supported in this browser. Falling back to text-only mode.");
+      micBtn.style.display = "none"; // Non-blocking graceful fallback
+    }
+
+    micBtn.addEventListener("click", () => {
+      if (!recognition) return;
+      if (isRecording) {
+        recognition.stop();
+      } else {
+        try {
+          recognition.start();
+        } catch (err) {
+          console.error("Failed to start speech recognition:", err);
+        }
+      }
+    });
+
+    /* =========================================================================
+       STEP 2: SEND MESSAGE TO BACKEND (LANGUAGE IS OPTIONAL)
+       ========================================================================= */
+    async function sendMessage(text) {
+      const message = text || userInput.value.trim();
+      if (!message) return;
+
+      appendMessage(message, "user");
+      userInput.value = "";
+      statusBadge.textContent = "Thinking...";
+
+      try {
+        /*
+          CONTRACT NOTE:
+          - Request: {"message": "..."} (language is optional!)
+          - Response:
+            {
+              "reply": "आपकी आगामी ईएमआई ₹7,421.24 है...",
+              "intent": "check_emi",
+              "language": "hi",
+              "tts_supported": true,
+              "path_used": "xgboost",
+              "facts_used": ["emi_records.due_date", "emi_records.amount_due"]
+            }
+        */
+        const response = await fetch(`${API_BASE_URL}/customers/${DEFAULT_CUSTOMER_ID}/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: message }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        appendMessage(data.reply, "bot", {
+          intent: data.intent,
+          lang: data.language,
+          tts_supported: data.tts_supported
+        });
+
+        statusBadge.textContent = "Ready";
+
+        // Step 3: Trigger TTS if enabled and supported
+        if (autoTtsToggle.checked && data.tts_supported) {
+          speakText(data.reply, data.language);
+        }
+      } catch (err) {
+        console.error("Chat API error:", err);
+        appendMessage("Sorry, I could not reach the banking server. Please check connection.", "bot");
+        statusBadge.textContent = "Error";
+      }
+    }
+
+    /* =========================================================================
+       STEP 3: TTS (TEXT-TO-SPEECH) WITH BROWSER VOICE MATCHING
+       ========================================================================= */
+    function speakText(text, langCode) {
+      if (!window.speechSynthesis) return;
+
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      // Attempt to find a suitable voice matching the detected language
+      const voices = window.speechSynthesis.getVoices();
+      const targetLang = (langCode || "en").toLowerCase();
+
+      // Look for an exact or prefix match (e.g. "hi" matches "hi-IN")
+      const matchedVoice = voices.find(v => v.lang.toLowerCase().startsWith(targetLang));
+      if (matchedVoice) {
+        utterance.voice = matchedVoice;
+      }
+      utterance.lang = matchedVoice ? matchedVoice.lang : "en-US";
+      utterance.rate = 0.95; // Slightly slower for clarity in banking figures
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Populate voices when loaded by browser
+    if (window.speechSynthesis) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+
+    /* =========================================================================
+       UI HELPERS
+       ========================================================================= */
+    function appendMessage(text, sender, meta = null) {
+      const msgDiv = document.createElement("div");
+      msgDiv.className = `message ${sender}`;
+      msgDiv.textContent = text;
+
+      if (meta && sender === "bot") {
+        const metaDiv = document.createElement("div");
+        metaDiv.className = "meta-tag";
+        metaDiv.innerHTML = `<span>Intent: <b>${meta.intent}</b></span> <span>Lang: <b>${meta.lang}</b></span> <span>TTS: <b>${meta.tts_supported ? 'Yes' : 'No'}</b></span>`;
+        msgDiv.appendChild(metaDiv);
+      }
+
+      chatBox.appendChild(msgDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    sendBtn.addEventListener("click", () => sendMessage());
+    userInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>
