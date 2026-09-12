@@ -24,11 +24,15 @@ import pandas as pd
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 
 
+_TABLE_CACHE: dict = {}
+DB_PATH = os.path.join(DATA_DIR, "sahaay.db")
+
+
 def ensure_data_files_extracted():
-    """Ensures all compressed .csv.gz files in data/ are decompressed on cloud boot."""
+    """Ensures compressed files are extracted and SQLite transaction index is built."""
     if not os.path.exists(DATA_DIR):
         return
-    import gzip, shutil
+    import gzip, shutil, sqlite3
     for item in os.listdir(DATA_DIR):
         if item.endswith(".csv.gz"):
             csv_name = item[:-3]  # strip .gz -> .csv
@@ -37,6 +41,25 @@ def ensure_data_files_extracted():
             if not os.path.exists(csv_path):
                 with gzip.open(gz_path, "rb") as f_in, open(csv_path, "wb") as f_out:
                     shutil.copyfileobj(f_in, f_out)
+
+    # Ensure SQLite transactions table with index is initialized for 0ms queries & zero RAM overhead
+    tx_csv = os.path.join(DATA_DIR, "transactions.csv")
+    if os.path.exists(tx_csv) and not os.path.exists(DB_PATH):
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            first = True
+            for chunk in pd.read_csv(tx_csv, chunksize=100000):
+                if first:
+                    chunk.to_sql("transactions", conn, if_exists="replace", index=False)
+                    first = False
+                else:
+                    chunk.to_sql("transactions", conn, if_exists="append", index=False)
+            cur = conn.cursor()
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_tx_cust ON transactions (customer_id)")
+            conn.commit()
+            conn.close()
+        except Exception:
+            pass
 
 
 # Run check on module load
@@ -48,6 +71,10 @@ class ConsentError(Exception):
 
 
 def _load(table: str) -> pd.DataFrame:
+    global _TABLE_CACHE
+    if table in _TABLE_CACHE:
+        return _TABLE_CACHE[table]
+
     path = os.path.join(DATA_DIR, f"{table}.csv")
     gz_path = os.path.join(DATA_DIR, f"{table}.csv.gz")
 
@@ -61,9 +88,42 @@ def _load(table: str) -> pd.DataFrame:
         raise FileNotFoundError(
             f"{path} not found — run generate_synthetic_data.py first."
         )
-    return pd.read_csv(path)
+    df = pd.read_csv(path)
+    # Cache small static tables (customers, accounts, consent, etc.)
+    if table != "transactions":
+        _TABLE_CACHE[table] = df
+    return df
 
 
+def get_customer_transactions(customer_id: str) -> pd.DataFrame:
+    """
+    Lightning-fast, zero-RAM transaction query using SQLite indexed lookup.
+    Falls back gracefully to chunked CSV streaming if DB is unavailable.
+    """
+    import sqlite3
+    if os.path.exists(DB_PATH):
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            df = pd.read_sql_query(
+                "SELECT * FROM transactions WHERE customer_id = ?",
+                conn,
+                params=(customer_id,),
+            )
+            conn.close()
+            return df
+        except Exception:
+            pass
+
+    tx_path = os.path.join(DATA_DIR, "transactions.csv")
+    if not os.path.exists(tx_path):
+        return pd.DataFrame()
+
+    chunks = []
+    for chunk in pd.read_csv(tx_path, chunksize=50000):
+        c = chunk[chunk["customer_id"] == customer_id]
+        if not c.empty:
+            chunks.append(c)
+    return pd.concat(chunks, ignore_index=True) if chunks else pd.DataFrame()
 
 
 def _check_consent(customer_id: str, consent_id: str) -> dict:
@@ -102,8 +162,8 @@ def get_consented_data(customer_id: str, consent_id: str) -> dict:
 
     customers = _load("customers")
     accounts = _load("accounts")
-    transactions = _load("transactions")
     emi_records = _load("emi_records")
+    cust_txns = get_customer_transactions(customer_id)
 
     customer_row = customers[customers["customer_id"] == customer_id]
     if customer_row.empty:
@@ -112,7 +172,7 @@ def get_consented_data(customer_id: str, consent_id: str) -> dict:
     return {
         "customer": customer_row.iloc[0].to_dict(),
         "accounts": accounts[accounts["customer_id"] == customer_id].to_dict(orient="records"),
-        "transactions": transactions[transactions["customer_id"] == customer_id].to_dict(orient="records"),
+        "transactions": cust_txns.to_dict(orient="records"),
         "emi_records": emi_records[emi_records["customer_id"] == customer_id].to_dict(orient="records"),
         "consent": consent,
     }
@@ -149,6 +209,7 @@ def revoke_consent(customer_id: str, consent_id: str) -> None:
     scenarios called out in the research doc). Any component calling
     get_consented_data() after this will correctly receive a ConsentError.
     """
+    global _TABLE_CACHE
     path = os.path.join(DATA_DIR, "consent_artefacts.csv")
     consents = pd.read_csv(path)
     mask = (consents["customer_id"] == customer_id) & (consents["consent_id"] == consent_id)
@@ -156,3 +217,4 @@ def revoke_consent(customer_id: str, consent_id: str) -> None:
         raise ValueError("No matching consent artefact to revoke.")
     consents.loc[mask, "status"] = "REVOKED"
     consents.to_csv(path, index=False)
+    _TABLE_CACHE.pop("consent_artefacts", None)

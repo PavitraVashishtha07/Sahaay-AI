@@ -84,5 +84,7 @@ Thumbs.db
 # transactions.csv.gz (43MB) is committed to Git and automatically extracted on cloud container startup.
 data/transactions.csv
 data/*.parquet
+data/*.db
 *.csv.gz
 !data/transactions.csv.gz
+scratch/

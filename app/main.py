@@ -136,6 +136,11 @@ def startup_event():
         get_or_train_fraud_model()
     except Exception:
         pass
+    try:
+        import gc
+        gc.collect()
+    except Exception:
+        pass
 
 
 

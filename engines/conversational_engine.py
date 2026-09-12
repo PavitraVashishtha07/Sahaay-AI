@@ -38,7 +38,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "data_layer"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "engines"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "security"))
 
-from aa_interface import DATA_DIR, get_consented_data, get_active_consent_id_for_customer, ConsentError
+from aa_interface import (
+    DATA_DIR,
+    get_consented_data,
+    get_active_consent_id_for_customer,
+    get_customer_transactions,
+    ConsentError,
+)
 from stress_engine import compute_stress_profile
 from fraud_engine import detect_customer_anomalies
 from recommendation_engine import generate_recommendations
@@ -387,17 +393,8 @@ def _fetch_emi_facts(customer_id: str) -> Dict[str, Any]:
 
 
 def _fetch_transaction_facts(customer_id: str) -> Dict[str, Any]:
-    """Fetches real recent transactions from transactions.csv."""
-    tx_path = os.path.join(DATA_DIR, "transactions.csv")
-    if not os.path.exists(tx_path):
-        return {"has_transactions": False, "recent_transactions": []}
-
-    chunks = []
-    for chunk in pd.read_csv(tx_path, chunksize=50000):
-        c = chunk[chunk["customer_id"] == customer_id]
-        if not c.empty:
-            chunks.append(c)
-    cust_tx = pd.concat(chunks, ignore_index=True) if chunks else pd.DataFrame()
+    """Fetches real recent transactions from indexed database."""
+    cust_tx = get_customer_transactions(customer_id)
     if cust_tx.empty:
         return {"has_transactions": False, "recent_transactions": []}
 
@@ -428,19 +425,21 @@ def _fetch_transaction_facts(customer_id: str) -> Dict[str, Any]:
 def _fetch_product_facts(customer_id: str) -> Dict[str, Any]:
     """Queries recommendation and arbitration engines for real suitability facts."""
     arb = arbitrate_customer(customer_id)
-    profile_path = os.path.join(DATA_DIR, "customer_profile.csv")
-    profiles = pd.read_csv(profile_path)
-    p_row = profiles[profiles["customer_id"] == customer_id].iloc[0].to_dict()
-    recs = generate_recommendations(p_row)
+    recs = arb.get("recommendation_summary") or arb.get("recommendations")
+    if not recs:
+        profile_path = os.path.join(DATA_DIR, "customer_profile.csv")
+        profiles = pd.read_csv(profile_path)
+        p_row = profiles[profiles["customer_id"] == customer_id].iloc[0].to_dict()
+        recs = generate_recommendations(p_row)
 
     return {
         "arbitrated_action": arb["final_action"],
         "priority_tier": arb["priority_tier_applied"],
         "action_headline": arb["action_headline"],
-        "path_used": recs["path_used"],
-        "top_recommendations": recs["top_recommendations"],
-        "recommended_products": recs["recommended_products"][:2],
-        "unsuitable_products": recs["unsuitable_products"],
+        "path_used": recs.get("path_used", "xgboost"),
+        "top_recommendations": recs.get("top_recommendations", []),
+        "recommended_products": recs.get("recommended_products", [])[:2],
+        "unsuitable_products": recs.get("unsuitable_products", []),
     }
 
 

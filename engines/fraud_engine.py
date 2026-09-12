@@ -35,6 +35,9 @@ from sklearn.metrics import roc_auc_score, precision_score, recall_score
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "data_layer"))
+from aa_interface import get_customer_transactions
+
 FRAUD_FEATURES = [
     "amount_ratio",
     "is_new_device_f",
@@ -62,11 +65,24 @@ def _get_customer_baselines() -> Dict[str, float]:
     if _CUSTOMER_BASELINES is not None:
         return _CUSTOMER_BASELINES
 
+    db_path = os.path.join(DATA_DIR, "sahaay.db")
+    if os.path.exists(db_path):
+        try:
+            import sqlite3
+            conn = sqlite3.connect(db_path)
+            cur = conn.cursor()
+            cur.execute("SELECT customer_id, AVG(amount) FROM transactions GROUP BY customer_id")
+            _CUSTOMER_BASELINES = dict(cur.fetchall())
+            conn.close()
+            return _CUSTOMER_BASELINES
+        except Exception:
+            pass
+
     tx_path = os.path.join(DATA_DIR, "transactions.csv")
     if os.path.exists(tx_path):
         sums: Dict[str, float] = {}
         counts: Dict[str, int] = {}
-        for chunk in pd.read_csv(tx_path, chunksize=50000, usecols=["customer_id", "amount"]):
+        for chunk in pd.read_csv(tx_path, chunksize=100000, usecols=["customer_id", "amount"]):
             grp = chunk.groupby("customer_id")["amount"].agg(["sum", "count"])
             for cid, row in grp.iterrows():
                 cid_str = str(cid)
@@ -106,7 +122,7 @@ def extract_features(
 
 
 def get_or_train_fraud_model(
-    sample_size: int = 50000,
+    sample_size: int = 25000,
     force_retrain: bool = False,
 ) -> IsolationForest:
     """
@@ -122,11 +138,11 @@ def get_or_train_fraud_model(
         raise FileNotFoundError(f"{tx_path} not found.")
 
     # Evenly sample rows across the full dataset without loading all rows into RAM
-    tx_sample = pd.read_csv(tx_path, skiprows=lambda i: i > 0 and (i % 18 != 0))
+    tx_sample = pd.read_csv(tx_path, skiprows=lambda i: i > 0 and (i % 36 != 0))
     X_train = extract_features(tx_sample)
 
     model = IsolationForest(
-        n_estimators=100,
+        n_estimators=50,
         contamination=0.01,
         random_state=42,
         n_jobs=1,
@@ -204,16 +220,7 @@ def detect_customer_anomalies(
     Scans a customer's transaction history to detect any anomalous burst activity.
     """
     if transactions_df is None:
-        tx_path = os.path.join(DATA_DIR, "transactions.csv")
-        if not os.path.exists(tx_path):
-            customer_txns = pd.DataFrame()
-        else:
-            chunks = []
-            for chunk in pd.read_csv(tx_path, chunksize=50000):
-                c = chunk[chunk["customer_id"] == customer_id]
-                if not c.empty:
-                    chunks.append(c)
-            customer_txns = pd.concat(chunks, ignore_index=True) if chunks else pd.DataFrame()
+        customer_txns = get_customer_transactions(customer_id)
     else:
         customer_txns = transactions_df[transactions_df["customer_id"] == customer_id]
 
