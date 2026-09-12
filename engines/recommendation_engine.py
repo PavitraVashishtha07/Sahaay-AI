@@ -180,11 +180,12 @@ def train_models(force_retrain: bool = False) -> None:
     for product in TARGET_PRODUCTS:
         y_train = df.loc[train_mask, "target_" + product]
         clf = xgb.XGBClassifier(
-            n_estimators=50,
-            max_depth=4,
+            n_estimators=30,
+            max_depth=3,
             learning_rate=0.1,
             random_state=42,
             eval_metric="logloss",
+            n_jobs=1,
         )
         clf.fit(X_train, y_train)
         _XGB_MODELS[product] = clf

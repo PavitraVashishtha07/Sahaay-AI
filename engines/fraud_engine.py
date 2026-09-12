@@ -61,10 +61,18 @@ def _get_customer_baselines() -> Dict[str, float]:
     global _CUSTOMER_BASELINES
     if _CUSTOMER_BASELINES is not None:
         return _CUSTOMER_BASELINES
+
     tx_path = os.path.join(DATA_DIR, "transactions.csv")
     if os.path.exists(tx_path):
-        df = pd.read_csv(tx_path, usecols=["customer_id", "amount"])
-        _CUSTOMER_BASELINES = _compute_customer_baselines(df)
+        sums: Dict[str, float] = {}
+        counts: Dict[str, int] = {}
+        for chunk in pd.read_csv(tx_path, chunksize=50000, usecols=["customer_id", "amount"]):
+            grp = chunk.groupby("customer_id")["amount"].agg(["sum", "count"])
+            for cid, row in grp.iterrows():
+                cid_str = str(cid)
+                sums[cid_str] = sums.get(cid_str, 0.0) + float(row["sum"])
+                counts[cid_str] = counts.get(cid_str, 0) + int(row["count"])
+        _CUSTOMER_BASELINES = {cid: sums[cid] / counts[cid] for cid in sums if counts[cid] > 0}
     else:
         _CUSTOMER_BASELINES = {}
     return _CUSTOMER_BASELINES
@@ -113,19 +121,15 @@ def get_or_train_fraud_model(
     if not os.path.exists(tx_path):
         raise FileNotFoundError(f"{tx_path} not found.")
 
-    tx = pd.read_csv(tx_path)
-    if len(tx) > sample_size:
-        tx_sample = tx.sample(n=sample_size, random_state=42)
-    else:
-        tx_sample = tx
-
+    # Evenly sample rows across the full dataset without loading all rows into RAM
+    tx_sample = pd.read_csv(tx_path, skiprows=lambda i: i > 0 and (i % 18 != 0))
     X_train = extract_features(tx_sample)
 
     model = IsolationForest(
         n_estimators=100,
         contamination=0.01,
         random_state=42,
-        n_jobs=-1,
+        n_jobs=1,
     )
     model.fit(X_train)
 
@@ -201,8 +205,15 @@ def detect_customer_anomalies(
     """
     if transactions_df is None:
         tx_path = os.path.join(DATA_DIR, "transactions.csv")
-        tx = pd.read_csv(tx_path)
-        customer_txns = tx[tx["customer_id"] == customer_id]
+        if not os.path.exists(tx_path):
+            customer_txns = pd.DataFrame()
+        else:
+            chunks = []
+            for chunk in pd.read_csv(tx_path, chunksize=50000):
+                c = chunk[chunk["customer_id"] == customer_id]
+                if not c.empty:
+                    chunks.append(c)
+            customer_txns = pd.concat(chunks, ignore_index=True) if chunks else pd.DataFrame()
     else:
         customer_txns = transactions_df[transactions_df["customer_id"] == customer_id]
 

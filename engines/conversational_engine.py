@@ -392,8 +392,12 @@ def _fetch_transaction_facts(customer_id: str) -> Dict[str, Any]:
     if not os.path.exists(tx_path):
         return {"has_transactions": False, "recent_transactions": []}
 
-    df = pd.read_csv(tx_path)
-    cust_tx = df[df["customer_id"] == customer_id]
+    chunks = []
+    for chunk in pd.read_csv(tx_path, chunksize=50000):
+        c = chunk[chunk["customer_id"] == customer_id]
+        if not c.empty:
+            chunks.append(c)
+    cust_tx = pd.concat(chunks, ignore_index=True) if chunks else pd.DataFrame()
     if cust_tx.empty:
         return {"has_transactions": False, "recent_transactions": []}
 

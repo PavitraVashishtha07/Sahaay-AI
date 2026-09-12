@@ -118,6 +118,27 @@ app.add_middleware(
 )
 
 
+@app.on_event("startup")
+def startup_event():
+    """Pre-warms ML models and extracts dataset on server startup."""
+    try:
+        from aa_interface import ensure_data_files_extracted
+        ensure_data_files_extracted()
+    except Exception:
+        pass
+    try:
+        from recommendation_engine import train_models
+        train_models()
+    except Exception:
+        pass
+    try:
+        from fraud_engine import get_or_train_fraud_model
+        get_or_train_fraud_model()
+    except Exception:
+        pass
+
+
+
 class RevokeRequest(BaseModel):
     customer_id: str
     consent_id: str
