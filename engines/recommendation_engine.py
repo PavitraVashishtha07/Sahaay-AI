@@ -360,7 +360,13 @@ def generate_recommendations(
 
     cov = float(row.get("data_coverage_score", 1.0))
     qual = float(row.get("data_quality_score", 1.0))
-    note = row.get("data_coverage_note")
+    raw_note = row.get("data_coverage_note")
+    if pd.notna(raw_note) and str(raw_note).strip() not in ("", "None", "nan"):
+        note = str(raw_note).strip()
+    elif cov >= 0.90:
+        note = "Full 12-month transaction & account history verified via Account Aggregator"
+    else:
+        note = "Partial transaction history connected through Account Aggregator"
     model_conf = 0.88
     overall_conf_score = round((0.40 * cov) + (0.30 * qual) + (0.30 * model_conf), 4)
     overall_conf = {

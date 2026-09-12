@@ -232,17 +232,50 @@ def list_customers():
 
 @app.get("/customers/{customer_id}/consent")
 def get_consent(customer_id: str):
-    consent_id = get_active_consent_id_for_customer(customer_id)
-    if not consent_id:
-        raise HTTPException(status_code=404, detail="No active consent found for this customer.")
-    return {"customer_id": customer_id, "consent_id": consent_id}
+    """
+    Module 1 & Security Gateway: Returns active or latest consent artefact status
+    for a given customer (ACTIVE, REVOKED, or EXPIRED).
+    """
+    from aa_interface import _load
+    from datetime import date
+    try:
+        consents = _load("consent_artefacts")
+        rows = consents[consents["customer_id"] == customer_id]
+        if rows.empty:
+            raise HTTPException(status_code=404, detail=f"No consent artefact found for customer '{customer_id}'.")
+
+        latest = rows.iloc[-1].to_dict()
+        status = str(latest.get("status", "ACTIVE")).upper()
+        validity_val = latest.get("validity_end") if pd.notna(latest.get("validity_end")) else latest.get("expires_at")
+        if pd.notna(validity_val) and status == "ACTIVE":
+            try:
+                validity_end = pd.to_datetime(validity_val).date()
+                if validity_end < date.today():
+                    status = "EXPIRED"
+            except Exception:
+                pass
+
+        return _sanitize_json_payload({
+            "customer_id": customer_id,
+            "consent_id": latest.get("consent_id"),
+            "status": status,
+            "validity_start": str(latest.get("validity_start")) if pd.notna(latest.get("validity_start")) else None,
+            "validity_end": str(validity_val) if pd.notna(validity_val) else None,
+            "fip_name": latest.get("fip_name"),
+            "fiu_name": latest.get("fiu_name"),
+            "purpose": latest.get("purpose"),
+        })
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/customers/{customer_id}/data")
 def get_data(customer_id: str, consent_id: str, request: Request, role: Optional[str] = None):
     """
     Module 1 & Security Gateway: Returns raw customer + accounts + transactions + EMI records.
-    Strictly restricted to db_admin role per security access matrix.
+    Strictly restricted to db_admin role per security access matrix. Chatbot/user roles receive 403.
     """
     current_role = get_role(request, role)
     if current_role != "db_admin":
@@ -260,10 +293,10 @@ def get_data(customer_id: str, consent_id: str, request: Request, role: Optional
 
 
 @app.get("/customers/{customer_id}/profile")
-def get_profile(customer_id: str):
+def get_profile(customer_id: str, request: Request, role: Optional[str] = None):
     """
     Module 2: Returns the single shared customer_profile row (38 features),
-    with internal ground truth stripped.
+    with internal ground truth stripped. Accessible to user, analyst, backend, admin.
     """
     if not os.path.exists(_PROFILE_PATH):
         raise HTTPException(status_code=503, detail="customer_profile.csv not built yet.")
@@ -277,11 +310,19 @@ def get_profile(customer_id: str):
 
 
 @app.get("/customers/{customer_id}/stress")
-def get_stress(customer_id: str):
+def get_stress(customer_id: str, request: Request, role: Optional[str] = None):
     """
-    Section 4.3: Returns transparent stress score, stress band, causal drivers,
-    and secondary isolation forest anomaly check.
+    Section 4.3 & Security Gateway: Returns transparent stress score, stress band,
+    causal drivers, and secondary isolation forest anomaly check.
+    Accessible to admin, backend, analyst, user, and db_admin roles.
     """
+    current_role = get_role(request, role)
+    allowed_roles = {"admin", "backend", "analyst", "user", "db_admin"}
+    if current_role not in allowed_roles:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Access denied: role '{current_role}' is not authorized to access stress engine records.",
+        )
     if not os.path.exists(_PROFILE_PATH):
         raise HTTPException(status_code=503, detail="customer_profile.csv not built yet.")
     profiles = pd.read_csv(_PROFILE_PATH)
@@ -292,11 +333,19 @@ def get_stress(customer_id: str):
 
 
 @app.get("/customers/{customer_id}/fraud")
-def get_fraud(customer_id: str):
+def get_fraud(customer_id: str, request: Request, role: Optional[str] = None):
     """
-    Section 4.4: Returns transaction anomaly detection results, max score,
-    and novelty signal flags.
+    Section 4.4 & Security Gateway: Returns transaction anomaly detection results,
+    max score, and novelty signal flags.
+    Accessible to admin, backend, analyst, user, and db_admin roles.
     """
+    current_role = get_role(request, role)
+    allowed_roles = {"admin", "backend", "analyst", "user", "db_admin"}
+    if current_role not in allowed_roles:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Access denied: role '{current_role}' is not authorized to access fraud anomaly records.",
+        )
     try:
         return _sanitize_json_payload(detect_customer_anomalies(customer_id))
     except Exception as e:
@@ -304,11 +353,20 @@ def get_fraud(customer_id: str):
 
 
 @app.get("/customers/{customer_id}/recommendations")
-def get_recommendations(customer_id: str):
+def get_recommendations(customer_id: str, request: Request, role: Optional[str] = None):
     """
-    Section 4.2: Returns product suitability recommendations with SHAP reason
+    Section 4.2 & Security Gateway: Returns product suitability recommendations with SHAP reason
     codes and explicit path_used ('xgboost' or 'gmm_fallback').
+    Accessible to chatbot, user, analyst, backend, admin. Returns strictly sanitized suitability
+    and reason-code metadata without unmasked raw transaction records.
     """
+    current_role = get_role(request, role)
+    allowed_roles = {"chatbot", "user", "analyst", "backend", "admin", "db_admin"}
+    if current_role not in allowed_roles:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Access denied: role '{current_role}' is not authorized to access recommendations.",
+        )
     if not os.path.exists(_PROFILE_PATH):
         raise HTTPException(status_code=503, detail="customer_profile.csv not built yet.")
     profiles = pd.read_csv(_PROFILE_PATH)

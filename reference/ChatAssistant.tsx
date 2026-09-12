@@ -1,3 +1,22 @@
+/**
+ * ==============================================================================
+ * REFERENCE ARTIFACT ONLY — NOT FOR BACKEND EXECUTION
+ * ==============================================================================
+ * Location: reference/ChatAssistant.tsx
+ * 
+ * Purpose:
+ * Reference React + TypeScript component demonstrating how frontend clients
+ * integrate with the Sahaay AI FastAPI /customers/{id}/chat endpoint:
+ * - Natural language intent visualization
+ * - Web Speech API for multilingual ASR (voice input) & TTS (read-aloud)
+ * - Multilingual prompt chip handling (Hindi, Gujarati, Tamil, English)
+ * - Structured KYC onboarding state machine transitions
+ * 
+ * The authoritative production frontend is developed and hosted independently
+ * by the frontend team. This file is retained strictly as an integration blueprint.
+ * ==============================================================================
+ */
+
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -16,9 +35,14 @@ interface Message {
 interface ChatAssistantProps {
   customerId: string;
   selectedLanguage: string;
+  apiBaseUrl?: string;
 }
 
-export const ChatAssistant: React.FC<ChatAssistantProps> = ({ customerId, selectedLanguage }) => {
+export const ChatAssistant: React.FC<ChatAssistantProps> = ({
+  customerId,
+  selectedLanguage,
+  apiBaseUrl = "http://127.0.0.1:8000",
+}) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -102,7 +126,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ customerId, select
     setLoading(true);
 
     try {
-      const resp = await fetch(`http://127.0.0.1:8000/customers/${customerId}/chat`, {
+      const resp = await fetch(`${apiBaseUrl}/customers/${customerId}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: textToSend, language: selectedLanguage || undefined }),
@@ -139,7 +163,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ customerId, select
         {
           id: (Date.now() + 1).toString(),
           sender: "bot",
-          text: "Connection error: Please ensure FastAPI backend is running at http://127.0.0.1:8000.",
+          text: `Connection error: Please ensure FastAPI backend is running at ${apiBaseUrl}.`,
         },
       ]);
     } finally {
@@ -149,7 +173,7 @@ export const ChatAssistant: React.FC<ChatAssistantProps> = ({ customerId, select
 
   const startKYC = async () => {
     try {
-      const resp = await fetch(`http://127.0.0.1:8000/customers/${customerId}/onboarding-step`, {
+      const resp = await fetch(`${apiBaseUrl}/customers/${customerId}/onboarding-step`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ input: "START" }),
