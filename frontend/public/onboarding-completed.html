@@ -169,7 +169,7 @@
         </div>
 
         <!-- Step 2: Completed (Income Type) -->
-        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = window.location.pathname.startsWith('/onboarding') ? '/onboarding/income' : 'onboarding-income.html'">
+        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = '/onboarding/income'">
           <div class="w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-[#073B30] text-white flex items-center justify-center font-bold text-sm shadow-sm ring-4 ring-white">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
@@ -181,7 +181,7 @@
         </div>
 
         <!-- Step 3: Completed (Purpose) -->
-        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = window.location.pathname.startsWith('/onboarding') ? '/onboarding/purpose' : 'onboarding-purpose.html'">
+        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = '/onboarding/purpose'">
           <div class="w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-[#073B30] text-white flex items-center justify-center font-bold text-sm shadow-sm ring-4 ring-white">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
@@ -193,7 +193,7 @@
         </div>
 
         <!-- Step 4: Completed (Confirm) -->
-        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = window.location.pathname.startsWith('/onboarding') ? '/onboarding/confirm' : 'onboarding-confirm.html'">
+        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = '/onboarding/confirm'">
           <div class="w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-[#073B30] text-white flex items-center justify-center font-bold text-sm shadow-sm ring-4 ring-white">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
@@ -294,7 +294,7 @@
 
       <!-- Primary CTA: Go to My Dashboard with Auto-Redirect Timer -->
       <div class="mt-8 flex flex-col items-center w-full max-w-md">
-        <a id="dashboardCta" href="app.html" onclick="if(window.location.pathname.startsWith('/onboarding') || window.location.pathname.startsWith('/dashboard')) this.href='/dashboard';" class="w-full flex items-center justify-center gap-3 bg-[#00241C] hover:bg-[#073B30] active:bg-[#001712] text-white font-bold text-base sm:text-lg py-4 px-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 group cursor-pointer">
+        <a id="dashboardCta" href="/dashboard" class="w-full flex items-center justify-center gap-3 bg-[#00241C] hover:bg-[#073B30] active:bg-[#001712] text-white font-bold text-base sm:text-lg py-4 px-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 group cursor-pointer">
           <span class="font-bold">मेरे डैशबोर्ड पर चलें</span>
           <span class="text-emerald-300 font-normal">| Go to my dashboard</span>
           <span class="material-symbols-outlined text-[22px] text-[#E9A23B] transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>

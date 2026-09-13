@@ -113,7 +113,7 @@
         </div>
 
         <!-- Step 2: Completed (Income Type) -->
-        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = window.location.pathname.startsWith('/onboarding') ? '/onboarding/income' : 'onboarding-income.html'">
+        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = '/onboarding/income'">
           <div class="w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-[#073B30] text-white flex items-center justify-center font-bold text-sm shadow-sm ring-4 ring-white">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
@@ -125,7 +125,7 @@
         </div>
 
         <!-- Step 3: Completed (Purpose) -->
-        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = window.location.pathname.startsWith('/onboarding') ? '/onboarding/purpose' : 'onboarding-purpose.html'">
+        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = '/onboarding/purpose'">
           <div class="w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-[#073B30] text-white flex items-center justify-center font-bold text-sm shadow-sm ring-4 ring-white">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
@@ -238,7 +238,7 @@
             </div>
           </div>
           <!-- Edit button -->
-          <a href="onboarding-income.html" onclick="if(window.location.pathname.startsWith('/onboarding')) this.href='/onboarding/income';" class="px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-[#0F6E56] hover:text-[#073B30] bg-[#E2F3EB]/60 hover:bg-[#E2F3EB] rounded-lg border border-emerald-200 transition-colors flex items-center gap-1.5 flex-shrink-0">
+          <a href="/onboarding/income" class="px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-[#0F6E56] hover:text-[#073B30] bg-[#E2F3EB]/60 hover:bg-[#E2F3EB] rounded-lg border border-emerald-200 transition-colors flex items-center gap-1.5 flex-shrink-0">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
             </svg>
@@ -272,7 +272,7 @@
                 </div>
               </div>
             </div>
-            <a href="onboarding-purpose.html" onclick="if(window.location.pathname.startsWith('/onboarding')) this.href='/onboarding/purpose';" class="px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-[#073B30] bg-emerald-100/90 rounded-lg border border-emerald-300 flex items-center gap-1.5 flex-shrink-0">
+            <a href="/onboarding/purpose" class="px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-[#073B30] bg-emerald-100/90 rounded-lg border border-emerald-300 flex items-center gap-1.5 flex-shrink-0">
               <svg class="w-3.5 h-3.5 text-[#073B30]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
               </svg>
@@ -464,7 +464,7 @@
       </p>
       <div class="flex gap-3">
         <button onclick="location.reload()" class="flex-1 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700">पुनः समीक्षा</button>
-        <a href="onboarding-completed.html" onclick="if(window.location.pathname.startsWith('/onboarding')) this.href='/onboarding/completed';" class="flex-1 py-2.5 rounded-xl bg-[#073B30] text-white text-xs font-semibold hover:bg-[#0c4e40] flex items-center justify-center">आगे बढ़ें (संपूर्ण) &rarr;</a>
+        <a href="/onboarding/completed" class="flex-1 py-2.5 rounded-xl bg-[#073B30] text-white text-xs font-semibold hover:bg-[#0c4e40] flex items-center justify-center">आगे बढ़ें (संपूर्ण) &rarr;</a>
       </div>
     </div>
   </div>
