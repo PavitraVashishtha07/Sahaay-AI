@@ -656,16 +656,65 @@ def page_stitch_whitelisted(page: str):
 
 # Legacy continuity redirects (clean redirects, not duplicate handlers)
 @app.get("/app", include_in_schema=False)
+@app.get("/app.html", include_in_schema=False)
+@app.get("/index.html", include_in_schema=False)
 def redirect_app():
     return RedirectResponse(url="/", status_code=307)
 
 
+@app.get("/dashboard.html", include_in_schema=False)
+def redirect_dashboard_html():
+    return RedirectResponse(url="/dashboard", status_code=307)
+
+
+@app.get("/chat.html", include_in_schema=False)
+@app.get("/chat-assistant.html", include_in_schema=False)
+def redirect_chat_html():
+    return RedirectResponse(url="/chat", status_code=307)
+
+
+@app.get("/profile.html", include_in_schema=False)
+@app.get("/profile-settings.html", include_in_schema=False)
+def redirect_profile_html():
+    return RedirectResponse(url="/profile", status_code=307)
+
+
+@app.get("/recommendation", include_in_schema=False)
+@app.get("/recommendation.html", include_in_schema=False)
+@app.get("/recommendation-detail.html", include_in_schema=False)
+def redirect_recommendation():
+    return RedirectResponse(url="/recommendation/detail", status_code=307)
+
+
 @app.get("/onboarding", include_in_schema=False)
+@app.get("/onboarding.html", include_in_schema=False)
+@app.get("/onboarding-name.html", include_in_schema=False)
 def redirect_onboarding():
     return RedirectResponse(url="/onboarding/name", status_code=307)
 
 
-@app.get("/recommendation", include_in_schema=False)
-def redirect_recommendation():
-    return RedirectResponse(url="/recommendation/detail", status_code=307)
+@app.get("/onboarding-income.html", include_in_schema=False)
+def redirect_onboarding_income_html():
+    return RedirectResponse(url="/onboarding/income", status_code=307)
+
+
+@app.get("/onboarding-purpose.html", include_in_schema=False)
+def redirect_onboarding_purpose_html():
+    return RedirectResponse(url="/onboarding/purpose", status_code=307)
+
+
+@app.get("/onboarding-confirm.html", include_in_schema=False)
+def redirect_onboarding_confirm_html():
+    return RedirectResponse(url="/onboarding/confirm", status_code=307)
+
+
+@app.get("/onboarding-completed.html", include_in_schema=False)
+def redirect_onboarding_completed_html():
+    return RedirectResponse(url="/onboarding/completed", status_code=307)
+
+
+@app.get("/cross-cutting-states.html", include_in_schema=False)
+@app.get("/states.html", include_in_schema=False)
+def redirect_states_html():
+    return RedirectResponse(url="/cross-cutting-states", status_code=307)
 

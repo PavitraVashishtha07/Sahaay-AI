@@ -436,9 +436,12 @@
       <p class="text-sm text-gray-600 mb-6" id="successMessage">
         धन्यवाद! चरण १ (COLLECT_NAME) पूर्ण हुआ। अब अगले चरण (आमदनी का प्रकार) पर ले जा रहे हैं।
       </p>
-      <div class="flex gap-3">
-        <button onclick="location.reload()" class="flex-1 py-2.5 rounded-full border border-gray-300 text-xs font-semibold text-gray-700">फिर से देखें</button>
-        <a href="/app" class="flex-1 py-2.5 rounded-full bg-brand-teal-900 text-white text-xs font-semibold hover:bg-brand-teal-800">होमपेज पर जाएं</a>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="/onboarding/income" class="flex-1 py-3 rounded-full bg-brand-gold-500 text-brand-teal-950 font-bold text-xs sm:text-sm hover:bg-brand-gold-400 shadow-md flex items-center justify-center gap-1.5 transition-all">
+          <span>अगले चरण पर जाएं (Continue to Step 2)</span>
+          <span>&rarr;</span>
+        </a>
+        <a href="/" class="py-2.5 px-4 rounded-full border border-gray-300 text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center justify-center">होमपेज</a>
       </div>
     </div>
   </div>

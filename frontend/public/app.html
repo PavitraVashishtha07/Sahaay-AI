@@ -88,18 +88,18 @@
       </a>
 
       <!-- Primary Navigation Links -->
-      <nav aria-label="Main Navigation" class="hidden md:flex items-center gap-10">
-        <a class="text-base font-medium text-sahay-charcoal hover:text-sahay-tealMedium transition-colors" href="#products" data-i18n="nav_products">Products</a>
-        <a class="text-base font-medium text-sahay-charcoal hover:text-sahay-tealMedium transition-colors" href="#how-it-works" data-i18n="nav_how_it_works">How it works</a>
-        <a class="text-base font-medium text-sahay-charcoal hover:text-sahay-tealMedium transition-colors" href="#help" data-i18n="nav_help">Help</a>
-        <a class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-sahay-teal border border-emerald-300/60" href="/dashboard">Decision Console &rarr;</a>
+      <nav aria-label="Main Navigation" class="hidden md:flex items-center gap-6 lg:gap-8">
+        <a class="text-sm font-medium text-sahay-charcoal hover:text-sahay-tealMedium transition-colors" href="/dashboard" data-i18n="nav_dashboard">डैशबोर्ड / Dashboard</a>
+        <a class="text-sm font-medium text-sahay-charcoal hover:text-sahay-tealMedium transition-colors" href="/chat" data-i18n="nav_voice">वॉयस चैट / Voice Assistant</a>
+        <a class="text-sm font-medium text-sahay-charcoal hover:text-sahay-tealMedium transition-colors" href="/profile" data-i18n="nav_profile">प्रोफ़ाइल / Profile</a>
+        <a class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-sahay-teal border border-emerald-300/60 hover:bg-emerald-200 transition-colors" href="/dashboard">Decision Console &rarr;</a>
       </nav>
 
       <!-- Language Selector & Header CTA Button -->
       <div class="flex items-center gap-3 sm:gap-5">
         <!-- Prominent Language Selector (flag-free pill) -->
         <div class="relative group" data-purpose="language-selector-dropdown">
-          <button onclick="scrollToLanguages()" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm font-semibold rounded-full bg-white border border-gray-300 shadow-sm text-sahay-teal hover:bg-sahay-mint/50 focus:outline-none transition-all" type="button" aria-label="Language Selector">
+          <button onclick="scrollToLanguages()" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 text-sm font-semibold rounded-full bg-white border border-gray-300 shadow-sm text-sahay-teal hover:bg-sahay-mint/50 focus:outline-none transition-all cursor-pointer" type="button" aria-label="Language Selector">
             <svg class="w-4 h-4 text-sahay-tealMedium" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
@@ -111,11 +111,11 @@
         </div>
 
         <!-- Get Started / Primary Saffron Pill Button -->
-        <button onclick="openLoanModal()" class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 rounded-full bg-sahay-gold text-[#211707] font-semibold text-xs sm:text-sm hover:bg-[#dba138] hover:shadow-md active:scale-95 transition-all shadow-sm">
+        <a href="/onboarding/name" class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 rounded-full bg-sahay-gold text-[#211707] font-semibold text-xs sm:text-sm hover:bg-[#dba138] hover:shadow-md active:scale-95 transition-all shadow-sm">
           <span data-i18n="cta_get_started">Get started</span>
           <span class="mx-1.5 opacity-40">|</span>
           <span class="font-bold" data-i18n="cta_get_started_indic">शुरू करें</span>
-        </button>
+        </a>
       </div>
     </div>
   </header>
@@ -568,13 +568,20 @@
 
       <!-- Input Bar -->
       <div class="p-3 bg-white border-t border-gray-200 flex items-center gap-2">
-        <button id="voice-record-btn" onclick="toggleVoiceRecording()" class="w-10 h-10 rounded-full bg-sahay-mint text-sahay-teal flex items-center justify-center hover:bg-emerald-100 transition" title="Speak">
+        <button id="voice-record-btn" onclick="toggleVoiceRecording()" class="w-10 h-10 rounded-full bg-sahay-mint text-sahay-teal flex items-center justify-center hover:bg-emerald-100 transition cursor-pointer" title="Speak">
           <svg class="w-5 h-5 text-sahay-teal" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"></path><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path></svg>
         </button>
         <input id="chat-input" onkeydown="handleChatKeyDown(event)" type="text" placeholder="अपनी भाषा में टाइप करें..." class="flex-1 px-4 py-2 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-sahay-tealMedium"/>
-        <button onclick="sendChatMessage()" class="w-10 h-10 rounded-full bg-sahay-teal text-white flex items-center justify-center hover:bg-sahay-tealMedium transition" aria-label="Send">
+        <button onclick="sendChatMessage()" class="w-10 h-10 rounded-full bg-sahay-teal text-white flex items-center justify-center hover:bg-sahay-tealMedium transition cursor-pointer" aria-label="Send">
           <svg class="w-4 h-4 transform rotate-45 -mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
         </button>
+      </div>
+      <div class="py-2.5 px-4 bg-emerald-50 border-t border-emerald-100 flex items-center justify-between text-xs">
+        <span class="text-sahay-teal font-medium">अधिक विकल्पों के लिए:</span>
+        <a href="/chat" class="font-bold text-sahay-teal hover:text-sahay-tealMedium underline flex items-center gap-1">
+          <span>विस्तृत वॉयस स्क्रीन खोलें (Full Assistant Screen)</span>
+          <span>&rarr;</span>
+        </a>
       </div>
     </div>
   </div>
@@ -936,9 +943,9 @@
     }
 
     function submitLoanApplication() {
-      const amount = document.getElementById('loan-amount-input').value;
-      alert(`धन्यवाद! आपकी ₹${amount} की लोन पात्रता जांच ली गई है। हमारा सिस्टम आरबीआई-अनुपालक सुरक्षित एनबीएफसी पार्टनर के साथ कनेक्ट कर रहा है।`);
+      const amount = document.getElementById('loan-amount-input') ? document.getElementById('loan-amount-input').value : '30000';
       closeLoanModal();
+      window.location.href = `/onboarding/name?amount=${encodeURIComponent(amount)}`;
     }
 
     function handleChatKeyDown(e) {

@@ -89,7 +89,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
       
       <!-- Brand Logo Emblem -->
-      <a href="app.html" onclick="if(window.location.pathname.startsWith('/onboarding') || window.location.pathname.startsWith('/app')) this.href='/app';" class="flex items-center space-x-3 group">
+      <a href="/" class="flex items-center space-x-3 group cursor-pointer">
         <div class="w-10 h-10 rounded-xl bg-[#00241C] flex items-center justify-center text-emerald-100 shadow-sm group-hover:scale-105 transition-transform">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
@@ -494,8 +494,7 @@
         `;
       }
       setTimeout(() => {
-        const dest = window.location.pathname.startsWith('/onboarding') ? '/dashboard' : 'app.html';
-        window.location.href = dest;
+        window.location.href = '/dashboard';
       }, 400);
     }
 

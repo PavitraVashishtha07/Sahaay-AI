@@ -109,8 +109,28 @@
         </div>
       </div>
 
-      <!-- Persona Selector Dropdown & Switcher -->
+      <!-- Navigation Links & Switchers -->
       <div class="flex items-center gap-3 flex-wrap">
+        <!-- Quick Nav Links -->
+        <div class="flex items-center gap-2">
+          <a href="/" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-gray-900/90 text-gray-300 border border-gray-700/60 hover:bg-gray-800 hover:text-white transition-all">
+            <i data-lucide="home" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>Home</span>
+          </a>
+          <a href="/chat" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/30 hover:text-white transition-all">
+            <i data-lucide="mic" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>Voice Assistant</span>
+          </a>
+          <a href="/onboarding/name" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 hover:text-white transition-all">
+            <i data-lucide="user-plus" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Onboarding</span>
+          </a>
+          <a href="/profile" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-gray-900/90 text-gray-300 border border-gray-700/60 hover:bg-gray-800 hover:text-white transition-all">
+            <i data-lucide="user" class="w-3.5 h-3.5 text-purple-400"></i>
+            <span>Profile</span>
+          </a>
+        </div>
+
         <div class="flex items-center bg-gray-900/90 rounded-xl p-1 border border-gray-700/60 shadow-inner">
           <label for="personaSelect" class="text-xs font-semibold px-2.5 text-gray-400 flex items-center gap-1.5">
             <i data-lucide="user-check" class="w-3.5 h-3.5 text-cyan-400"></i> Persona:
@@ -125,13 +145,13 @@
 
         <!-- Language Selector -->
         <div class="flex items-center bg-gray-900/90 rounded-xl p-1 border border-gray-700/60">
-          <button onclick="setLanguage('en')" id="lang-en" class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all bg-indigo-600 text-white">EN</button>
-          <button onclick="setLanguage('hi')" id="lang-hi" class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all text-gray-400 hover:text-white">हिन्दी</button>
-          <button onclick="setLanguage('gu')" id="lang-gu" class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all text-gray-400 hover:text-white">ગુજરાતી</button>
+          <button onclick="setLanguage('en')" id="lang-en" class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all bg-indigo-600 text-white cursor-pointer">EN</button>
+          <button onclick="setLanguage('hi')" id="lang-hi" class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all text-gray-400 hover:text-white cursor-pointer">हिन्दी</button>
+          <button onclick="setLanguage('gu')" id="lang-gu" class="px-2.5 py-1 text-xs font-bold rounded-lg transition-all text-gray-400 hover:text-white cursor-pointer">ગુજરાતી</button>
         </div>
 
         <!-- Consent Gating & Revocation Demo Button -->
-        <button onclick="toggleConsentRevoke()" id="consentBtn" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-rose-500/20 hover:text-rose-300 hover:border-rose-500/40 transition-all">
+        <button onclick="toggleConsentRevoke()" id="consentBtn" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-rose-500/20 hover:text-rose-300 hover:border-rose-500/40 transition-all cursor-pointer">
           <i data-lucide="lock" class="w-3.5 h-3.5"></i>
           <span id="consentStatusText">AA Consent Active</span>
         </button>

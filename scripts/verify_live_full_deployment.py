@@ -105,16 +105,16 @@ if __name__ == "__main__":
     # 3. Stitch Dynamic Whitelisting & Path-Traversal Security
     print("\n--- 3. STITCH WHITELISTING & PATH-TRAVERSAL SECURITY ---")
     stitch_checks = [
-        ("/stitch/chat", 200, "Valid Stitch chat frame"),
-        ("/stitch/privacy", 200, "Valid Stitch privacy frame"),
-        ("/stitch/onboarding-name", 200, "Valid Stitch onboarding frame"),
-        ("/stitch/unlisted_page_forbidden", 404, "Unlisted page must return 404"),
-        ("/stitch/../../etc/passwd", 404, "Path traversal attempt must return 404"),
+        ("/stitch/chat", [200], "Valid Stitch chat frame"),
+        ("/stitch/privacy", [200], "Valid Stitch privacy frame"),
+        ("/stitch/onboarding-name", [200], "Valid Stitch onboarding frame"),
+        ("/stitch/unlisted_page_forbidden", [404], "Unlisted page must return 404"),
+        ("/stitch/../../etc/passwd", [400, 404], "Path traversal attempt rejected with 400 or 404"),
     ]
-    for path, exp_status, desc in stitch_checks:
+    for path, exp_statuses, desc in stitch_checks:
         r = make_request(path)
-        matched = r["status"] == exp_status
-        print(f"  {path:<35} -> Status: {r['status']} (Expected {exp_status}) | Match: {'PASS' if matched else 'FAIL'} ({desc})")
+        matched = r["status"] in exp_statuses
+        print(f"  {path:<35} -> Status: {r['status']} (Expected {exp_statuses}) | Match: {'PASS' if matched else 'FAIL'} ({desc})")
 
     # 4. Legacy Continuity 307 Redirects
     print("\n--- 4. LEGACY CONTINUITY 307 REDIRECTS ---")
@@ -163,10 +163,12 @@ if __name__ == "__main__":
     print(f"POST /customers/cust_86838bd208/chat -> Status: {chat_res['status']} | Latency: {chat_res['elapsed_ms']}ms")
     if chat_res['status'] == 200:
         cdata = chat_res.get("data", {})
-        print(f"  Reply: {cdata.get('reply')}")
+        reply_safe = str(cdata.get('reply')).encode('ascii', errors='replace').decode('ascii')
+        print(f"  Reply: {reply_safe}")
         print(f"  Intent: {cdata.get('intent')} | Language: {cdata.get('language')} | TTS Supported: {cdata.get('tts_supported')}")
         print(f"  Facts Used: {cdata.get('facts_used')}")
 
     print("\n" + "=" * 80)
     print("LIVE DEPLOYMENT VERIFICATION COMPLETE!")
     print("=" * 80)
+
