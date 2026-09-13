@@ -972,9 +972,10 @@
         if (resp.ok) {
           const data = await resp.json();
           appendMessage('bot', data.reply);
-          if (data.tts_supported !== false && 'speechSynthesis' in window && isRecording) {
+          if (data.tts_supported !== false && 'speechSynthesis' in window) {
             const utterance = new SpeechSynthesisUtterance(data.reply);
             utterance.rate = 0.95;
+            utterance.lang = data.language === 'hi' ? 'hi-IN' : (data.language === 'mr' ? 'mr-IN' : (data.language === 'gu' ? 'gu-IN' : 'en-IN'));
             window.speechSynthesis.speak(utterance);
           }
           return;
@@ -1018,21 +1019,61 @@
     }
 
     let isRecording = false;
+    let modalRecognition = null;
+
+    const SpeechRecModal = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecModal) {
+      modalRecognition = new SpeechRecModal();
+      modalRecognition.continuous = false;
+      modalRecognition.interimResults = false;
+      modalRecognition.lang = 'hi-IN';
+
+      modalRecognition.onstart = () => {
+        isRecording = true;
+        const btn = document.getElementById('voice-record-btn');
+        if (btn) btn.classList.add('bg-red-500', 'text-white', 'animate-pulse');
+        const input = document.getElementById('chat-input');
+        if (input) input.placeholder = 'सुन रहा हूँ... बोलिए (Listening in Hindi/Hinglish/English)...';
+      };
+
+      modalRecognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        const input = document.getElementById('chat-input');
+        if (input) input.value = transcript;
+        sendChatMessage();
+      };
+
+      modalRecognition.onerror = (event) => {
+        console.warn('ASR Modal Warning:', event.error);
+        isRecording = false;
+        const btn = document.getElementById('voice-record-btn');
+        if (btn) btn.classList.remove('bg-red-500', 'text-white', 'animate-pulse');
+        const input = document.getElementById('chat-input');
+        if (input) input.placeholder = 'अपनी भाषा में टाइप करें...';
+      };
+
+      modalRecognition.onend = () => {
+        isRecording = false;
+        const btn = document.getElementById('voice-record-btn');
+        if (btn) btn.classList.remove('bg-red-500', 'text-white', 'animate-pulse');
+        const input = document.getElementById('chat-input');
+        if (input) input.placeholder = 'अपनी भाषा में टाइप करें...';
+      };
+    }
+
     function toggleVoiceRecording() {
-      const btn = document.getElementById('voice-record-btn');
-      isRecording = !isRecording;
+      if (!modalRecognition) {
+        alert('Browser Speech Recognition is not supported in this browser. Please type your message.');
+        return;
+      }
       if (isRecording) {
-        btn.classList.add('bg-red-500', 'text-white', 'animate-pulse');
-        document.getElementById('chat-input').placeholder = 'सुन रहा हूँ... बोलिए (Listening...)';
-        setTimeout(() => {
-          if (isRecording) {
-            toggleVoiceRecording();
-            sendQuickPrompt('मुझे छोटे व्यापार के लिए लोन चाहिए');
-          }
-        }, 3000);
+        modalRecognition.stop();
       } else {
-        btn.classList.remove('bg-red-500', 'text-white', 'animate-pulse');
-        document.getElementById('chat-input').placeholder = 'अपनी भाषा में टाइप करें...';
+        try {
+          modalRecognition.start();
+        } catch (e) {
+          console.warn('SpeechRecognition error starting:', e);
+        }
       }
     }
   </script>

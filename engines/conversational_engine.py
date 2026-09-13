@@ -53,6 +53,8 @@ from sanitize import sanitize_for_llm
 
 
 class Intent(str, Enum):
+    GREETING = "greeting"
+    APPLY_LOAN = "apply_loan"
     CHECK_EMI = "check_emi"
     EXPLAIN_TRANSACTION = "explain_transaction"
     REPORT_SUSPICIOUS_ACTIVITY = "report_suspicious_activity"
@@ -103,8 +105,13 @@ def is_tts_supported(language_code: Optional[str]) -> bool:
 # --------------------------------------------------------------------------
 
 INTENT_PATTERNS: Dict[Intent, List[str]] = {
+    Intent.GREETING: [
+        r"^(hello|hi|hey|namaste|namaskar|good morning|good afternoon|good evening|kem cho|vanakkam|namaskara|sat sri akal|pranam|adaab|greetings)\b",
+        r"(my name is|mera naam|i am|who are you|what can you do|who made you)",
+        r"(नमस्ते|नमस्कार|केम छो|வணக்கம்|నమస్కారం|ನಮಸ್ಕಾರ|ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ|নমস্কার|प्रणाम)",
+    ],
     Intent.CHECK_EMI: [
-        r"(emi|loan payment|due date|installment|किस्त|ईएमआई|हप्ते|हप्ता|હપ્તો|હપ્તા|ચુકવણી|લોન|কিশোর|কিস্তি|ইএমআই|ঋণ|இஎம்ஐ|கடன்|తవణ|రుణం|ಕಂತು|ಕಡ|ਕਿਸ਼ਤ|ലോൺ|ഇഎംഐ|ଇଏମଆଇ|କିସ୍ତି|ଋଣ)",
+        r"(emi|loan payment|due date|installment|किस्त|ईएमआई|हप्ते|हप्ता|હપ્તો|હપ્તા|ચુકવણી|কিশোর|কিস্তি|ইএমআই|இஎம்ஐ|கடன் தவணை|తవణ|రుణం|ಕಂತು|ಕಡ|ਕਿਸ਼ਤ|ലോൺ|ഇഎംഐ|ଇଏମଆଇ|କିସ୍ତି)",
         r"(how much do i owe|next emi|emi status|emi schedule|loan amount due|due amount)",
         r"(meri emi|mera emi|emi kab hai|kitna dena hai|kitni emi|किस्त कितनी|ईएमआई कब|हप्ता कधी आहे|किती भरायचे)",
         r"(હપ્તો ક્યારે છે|કેટલા ભરવાના છે|મારી ઈએમઆઈ|હપ્તો કેટલો)",
@@ -116,6 +123,11 @@ INTENT_PATTERNS: Dict[Intent, List[str]] = {
         r"(അടുത്ത ഇഎംഐ എപ്പോൾ|എത്ര അടയ്ക്കണം)",
         r"(ମୋର ପରବର୍ତ୍ତୀ ଇଏମଆଇ|କେତେ ଇଏମଆଇ|ଋଣ କିସ୍ତି)",
         r"(yaar mera emi kab hai|bhai emi|mera karz|loan kitna baki)",
+    ],
+    Intent.APPLY_LOAN: [
+        r"(need a loan|want a loan|apply for loan|apply loan|new loan|business loan|small business loan|personal loan|micro loan|instant loan|credit line|loan eligibility)",
+        r"(loan chahiye|karz chahiye|loan lena hai|loan apply|business ke liye loan|loan requirement|naveen karz)",
+        r"(लोन चाहिए|ऋण आवेदन|कर्ज चाहिए|व्यापार ऋण|लोन की जरूरत|લોન જોઈએ છે|ક્રેડિટ જોઈએ|कर्ज हवे|नवीन कर्ज|ऋণ চাই|கடன் வேண்டும்|రుణం కావాలి|ಸಾಲ ಬೇಕು)",
     ],
 
     Intent.EXPLAIN_TRANSACTION: [
@@ -504,7 +516,37 @@ def phrase_response_template(intent: str, facts: Dict[str, Any], language: str =
     """
     lang = (language or "en").lower().split("-")[0].split("_")[0]
 
-    if intent == Intent.CHECK_EMI.value:
+    if intent == Intent.GREETING.value:
+        templates_greet = {
+            "hi": "नमस्ते! मैं सहाय एआई हूँ, आपका पारदर्शी वित्तीय साथी। मैं ईएमआई स्थिति, नए ऋण आवेदन, हाल के लेनदेन और सुरक्षित बचत में आपकी सहायता कर सकता हूँ। मैं आपकी क्या मदद करूँ?",
+            "gu": "નમસ્તે! હું સહાય એઆઈ છું. હું તમને ઈએમઆઈ સ્થિતિ, નવી લોન અરજી અને બચત યોજનાઓમાં મદદ કરી શકું છું. હું તમને કેવી રીતે મદદ કરી શકું?",
+            "mr": "नमस्कार! मी सहाय एआय आहे. मी तुम्हाला ईएमआय स्थिती, नवीन कर्ज अर्ज आणि सुरक्षित बचतीमध्ये मदत करू शकतो. मी तुम्हाला कशी मदत करू?",
+            "bn": "নমস্কার! আমি সহায় এআই। ঋণ সংক্রান্ত তথ্য, ইএমআই স্থিতি এবং নিরাপদ সঞ্চয়ে আপনাকে সাহায্য করতে পারি। কীভাবে সাহায্য করতে পারি?",
+            "ta": "வணக்கம்! நான் சஹாய் AI. கடன் விவரங்கள், இஎம்ஐ நிலை மற்றும் சேமிப்பு திட்டங்களில் உங்களுக்கு உதவ முடியும். நான் உங்களுக்கு எவ்வாறு உதவலாம்?",
+            "te": "నమస్కారం! నేను సహాయ్ AI. మీ ఈఎంఐ వివరాలు, కొత్త రుణ దరఖాస్తులు మరియు పొదుపు పథకాలలో మీకు సహాయపడగలను. మీకు ఎలా సహాయపడాలి?",
+            "kn": "ನಮಸ್ಕಾರ! ನಾನು ಸಹಾಯ್ AI. ಸಾಲ ಮಾಹಿತಿ, ಇಎಂಐ ಸ್ಥಿತಿ ಮತ್ತು ಸುರಕ್ಷಿತ ಉಳಿತಾಯದಲ್ಲಿ ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಲ್ಲೆ. ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?",
+            "pa": "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਸਹਾਇ ਏਆਈ ਹਾਂ। ਮੈਂ ਤੁਹਾਡੀ ਈਐਮਆਈ ਸਥਿਤੀ ਅਤੇ ਕਰਜ਼ਾ ਅਰਜ਼ੀ ਵਿੱਚ ਮਦਦ ਕਰ ਸਕਦਾ ਹਾਂ। ਮੈਂ ਤੁਹਾਡੀ ਕੀ ਮਦਦ ਕਰਾਂ?",
+            "ml": "നമസ്കാരം! ഞാൻ സഹായ് AI ആണ്. ലോൺ വിവരങ്ങൾ, ഇഎംഐ നില എന്നിവയിൽ നിങ്ങളെ സഹായിക്കാം. ഞാൻ എങ്ങനെ സഹായിക്കണം?",
+            "en": "Hello! I am Sahaay AI, your ethical financial companion. I can assist you with loan applications, EMI status, recent transactions, and safe savings recommendations. How may I help you today?",
+        }
+        return templates_greet.get(lang, templates_greet["en"])
+
+    elif intent == Intent.APPLY_LOAN.value:
+        templates_loan = {
+            "hi": "सहाय एआई के माध्यम से आप ₹10,000 से ₹2,00,000 तक के आसान व्यवसाय एवं व्यक्तिगत ऋण के लिए आवेदन कर सकते हैं — पारदर्शी ईएमआई और शून्य छिपे शुल्क के साथ। आवेदन शुरू करने के लिए ऑनबोर्डिंग प्रक्रिया पूरी करें।",
+            "gu": "સહાય એઆઈ દ્વારા તમે ₹10,000 થી ₹2,00,000 સુધીની સરળ લોન મેળવી શકો છો — પારદર્શક ઈએમઆઈ સાથે. શું તમે અરજી શરૂ કરવા માંગો છો?",
+            "mr": "सहाय एआय द्वारे तुम्ही ₹10,000 ते ₹2,00,000 पर्यंतच्या सुलभ कर्जासाठी अर्ज करू शकता. ऑनबोर्डिंग सुरू करण्यासाठी आम्ही तयार आहोत.",
+            "bn": "সহায় এআই-এর মাধ্যমে আপনি ₹১০,০০০ থেকে ₹২,০০,০০০ পর্যন্ত ঋণ আবেদন করতে পারেন। আপনি কি আবেদন শুরু করতে চান?",
+            "ta": "சஹாய் AI மூலம் ₹10,000 முதல் ₹2,00,000 வரை வெளிப்படையான கடன் பெறலாம். விண்ணப்பத்தைத் தொடங்க விரும்புகிறீர்களா?",
+            "te": "సహాయ్ AI ద్వారా మీరు ₹10,000 నుండి ₹2,00,000 వరకు సులభమైన రుణాల కోసం దరఖాస్తు చేసుకోవచ్చు. దరఖాస్తు ప్రారంభించాలా?",
+            "kn": "ಸಹಾಯ್ AI ಮೂಲಕ ನೀವು ₹10,000 ರಿಂದ ₹2,00,000 ವರೆಗೆ ಸಾಲಕ್ಕೆ ಅರ್ಜಿ ಸಲ್ಲಿಸಬಹುದು.",
+            "pa": "ਸਹਾਇ ਏਆਈ ਰਾਹੀਂ ਤੁਸੀਂ ₹10,000 ਤੋਂ ₹2,00,000 ਤੱਕ ਦੇ ਕਰਜ਼ੇ ਲਈ ਅਰਜ਼ੀ ਦੇ ਸਕਦੇ ਹੋ।",
+            "ml": "സഹായ് AI വഴി നിങ്ങൾക്ക് ₹10,000 മുതൽ ₹2,00,000 വരെയുള്ള വായ്പകൾക്കായി അപേക്ഷിക്കാം.",
+            "en": "Through Sahaay AI, you can apply for tailored micro and business loans (₹10,000 to ₹2,00,000) with transparent EMIs and zero hidden charges. Would you like to proceed with your onboarding application?",
+        }
+        return templates_loan.get(lang, templates_loan["en"])
+
+    elif intent == Intent.CHECK_EMI.value:
         if not facts.get("has_emis"):
             templates = {
                 "hi": "आपके खाते पर कोई सक्रिय ईएमआई या ऋण रिकॉर्ड नहीं मिला।",

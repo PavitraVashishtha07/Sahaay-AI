@@ -209,11 +209,11 @@
 </div>
 <!-- Language Pill, Profile & Shield Lock Indicator -->
 <div class="flex items-center gap-space-md">
-<div class="flex items-center bg-surface-container-low p-1 rounded-full">
-<button class="px-space-sm py-1 rounded-full bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm font-semibold flex items-center gap-1">
+<div class="flex items-center bg-surface-container-low p-1 rounded-full" id="langSwitcherContainer">
+<button id="langBtnHi" onclick="setLanguage('hi', this)" class="px-space-sm py-1 rounded-full bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm font-semibold flex items-center gap-1 transition-all">
 <span class="material-symbols-outlined text-[16px] text-secondary">translate</span> हिन्दी
             </button>
-<button class="px-space-sm py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors">
+<button id="langBtnEn" onclick="setLanguage('en', this)" class="px-space-sm py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">
               English
             </button>
 </div>
@@ -667,6 +667,44 @@
     let isRecording = false;
     let recognition = null;
 
+    let activeLanguage = 'hi';
+    const LANG_BCP47 = {
+      'hi': 'hi-IN',
+      'en': 'en-IN',
+      'mr': 'mr-IN',
+      'gu': 'gu-IN',
+      'ta': 'ta-IN',
+      'te': 'te-IN',
+      'bn': 'bn-IN',
+      'kn': 'kn-IN',
+      'pa': 'pa-IN',
+      'ml': 'ml-IN'
+    };
+
+    function setLanguage(langCode, btnElement = null) {
+      activeLanguage = langCode;
+      const bcp = LANG_BCP47[langCode] || 'hi-IN';
+      if (recognition) {
+        recognition.lang = bcp;
+      }
+
+      // Update UI button highlights
+      const hiBtn = document.getElementById('langBtnHi');
+      const enBtn = document.getElementById('langBtnEn');
+      if (hiBtn && enBtn) {
+        if (langCode === 'hi') {
+          hiBtn.className = "px-space-sm py-1 rounded-full bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm font-semibold flex items-center gap-1 transition-all";
+          enBtn.className = "px-space-sm py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all";
+        } else if (langCode === 'en') {
+          enBtn.className = "px-space-sm py-1 rounded-full bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm font-semibold flex items-center gap-1 transition-all";
+          hiBtn.className = "px-space-sm py-1 rounded-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all";
+        }
+      }
+
+      const langNames = { 'hi': 'हिन्दी', 'en': 'English', 'mr': 'मराठी', 'gu': 'ગુજરાતી', 'ta': 'தமிழ்', 'te': 'తెలుగు', 'bn': 'বাংলা', 'kn': 'ಕನ್ನಡ', 'pa': 'ਪੰਜਾਬੀ', 'ml': 'മലയാളം' };
+      showToast('भाषा बदली गई', `सक्रिय भाषा: ${langNames[langCode] || langCode} (${bcp})`, 'translate');
+    }
+
     // Toast Notification System
     function showToast(title, message, icon = 'info') {
       const toast = document.getElementById('toastNotification');
@@ -697,6 +735,8 @@
 
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      const bcp = LANG_BCP47[langCode] || (langCode.includes('-') ? langCode : `${langCode}-IN`);
+      utterance.lang = bcp;
 
       const voices = window.speechSynthesis.getVoices();
       const targetVoice = voices.find(v => v.lang.includes(langCode) || v.name.toLowerCase().includes(langCode) || v.lang.includes('IN'));
@@ -736,7 +776,7 @@
       const textToSpeak = "आपकी अगली ईएमआई 15 अगस्त को सात हज़ार चार सौ इक्कीस रुपये चौबीस पैसे है।";
       if (icon) icon.textContent = 'graphic_eq';
       if (textSpan) textSpan.textContent = 'रुकें / Pause';
-      speakText(textToSpeak, 'hi', () => {
+      speakText(textToSpeak, activeLanguage, () => {
         if (icon) icon.textContent = 'volume_up';
         if (textSpan) textSpan.textContent = 'सुनें / Listen';
       });
@@ -796,7 +836,7 @@
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const bubbleId = 'bot-bubble-' + Date.now();
 
-      const lang = data.language || 'hi';
+      const lang = data.language || activeLanguage || 'hi';
       const confidencePct = Math.round((data.confidence || 0.9) * 100);
       const facts = Array.isArray(data.facts_used) && data.facts_used.length > 0 ? data.facts_used.join(', ') : 'verified_bank_records';
       const ttsAvailable = data.tts_supported !== false;
@@ -899,7 +939,7 @@
             'Content-Type': 'application/json',
             'X-User-Role': 'chatbot'
           },
-          body: JSON.stringify({ message: query })
+          body: JSON.stringify({ message: query, language: activeLanguage })
         });
 
         const typingEl = document.getElementById(typingId);
@@ -918,7 +958,7 @@
         appendBotBubble({
           reply: 'आपकी अगली ईएमआई 15 अगस्त को ₹7,421.24 देय है। आपका खाता संतुलित है।',
           intent: 'check_emi',
-          language: 'hi',
+          language: activeLanguage || 'hi',
           tts_supported: true,
           confidence: 0.95
         }, fromVoice);
@@ -951,6 +991,23 @@
         });
       });
 
+      // Wire footer language buttons
+      const footerLangBtns = document.querySelectorAll('footer button');
+      const langMap = {
+        'हिन्दी': 'hi',
+        'বাংলা': 'bn',
+        'தமிழ்': 'ta',
+        'తెలుగు': 'te',
+        'मराठी': 'mr',
+        'English': 'en'
+      };
+      footerLangBtns.forEach(btn => {
+        const text = btn.textContent.trim();
+        if (langMap[text]) {
+          btn.addEventListener('click', () => setLanguage(langMap[text], btn));
+        }
+      });
+
       // ASR Web Speech Recognition Setup
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       const mic = document.getElementById('mainMicTrigger');
@@ -959,12 +1016,13 @@
         recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
-        recognition.lang = 'hi-IN';
+        recognition.lang = LANG_BCP47[activeLanguage] || 'hi-IN';
 
         recognition.onstart = () => {
           isRecording = true;
-          mic.classList.add('scale-110', 'ring-4', 'ring-secondary-container');
-          showToast('माइक्रोफ़ोन सक्रिय', 'बोलिए, हम सुन रहे हैं... (Listening in Hindi/Hinglish)', 'mic');
+          mic.classList.add('scale-110', 'ring-4', 'ring-secondary-container', 'animate-pulse');
+          const bcp = LANG_BCP47[activeLanguage] || 'hi-IN';
+          showToast('माइक्रोफ़ोन सक्रिय', `बोलिए, हम सुन रहे हैं... (Listening in ${bcp})`, 'mic');
         };
 
         recognition.onresult = (event) => {
@@ -976,12 +1034,15 @@
         recognition.onerror = (event) => {
           console.warn('ASR Warning:', event.error);
           isRecording = false;
-          mic.classList.remove('scale-110', 'ring-4', 'ring-secondary-container');
+          mic.classList.remove('scale-110', 'ring-4', 'ring-secondary-container', 'animate-pulse');
+          if (event.error === 'not-allowed') {
+            showToast('माइक्रोफ़ोन अनुमति अस्वीकृत', 'कृपया ब्राउज़र सेटिंग्स में माइक्रोफ़ोन की अनुमति दें।', 'error');
+          }
         };
 
         recognition.onend = () => {
           isRecording = false;
-          mic.classList.remove('scale-110', 'ring-4', 'ring-secondary-container');
+          mic.classList.remove('scale-110', 'ring-4', 'ring-secondary-container', 'animate-pulse');
         };
 
         mic.addEventListener('click', () => {
@@ -989,6 +1050,7 @@
             recognition.stop();
           } else {
             try {
+              recognition.lang = LANG_BCP47[activeLanguage] || 'hi-IN';
               recognition.start();
             } catch (err) {
               console.warn('Could not start recognition', err);
