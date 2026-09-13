@@ -46,15 +46,35 @@ def test_localhost():
     print("\n--- 3. LEGACY 307 REDIRECTS ---")
     redirects = [
         ("/app", "/"),
-        ("/onboarding", "/onboarding/name"),
+        ("/app.html", "/"),
+        ("/index.html", "/"),
+        ("/dashboard.html", "/dashboard"),
+        ("/chat.html", "/chat"),
+        ("/profile-settings.html", "/profile"),
         ("/recommendation", "/recommendation/detail"),
+        ("/recommendation.html", "/recommendation/detail"),
+        ("/onboarding", "/onboarding/name"),
+        ("/onboarding.html", "/onboarding/name"),
+        ("/states.html", "/cross-cutting-states"),
     ]
     for src, dst in redirects:
         r = requests.get(f"{BASE_URL}{src}", allow_redirects=False)
         loc = r.headers.get("location")
-        print(f"  {src:<20} -> Status: {r.status_code} | Location: {loc}")
+        print(f"  {src:<24} -> Status: {r.status_code} | Location: {loc}")
         assert r.status_code == 307
         assert loc == dst
+
+    # 3b. Security checks (retired & unlisted routes return 404)
+    print("\n--- 3b. RETIRED & UNLISTED ROUTE SECURITY ---")
+    security_checks = [
+        ("/stitch/chat", 404),
+        ("/stitch/privacy", 404),
+        ("/unlisted_dummy_route", 404),
+    ]
+    for path, exp_code in security_checks:
+        r = requests.get(f"{BASE_URL}{path}")
+        print(f"  {path:<24} -> Status: {r.status_code} (Expected {exp_code})")
+        assert r.status_code == exp_code
 
     # 4. Personas End-to-End on Localhost
     print("\n--- 4. PERSONAS ARBITRATION ON LOCALHOST ---")

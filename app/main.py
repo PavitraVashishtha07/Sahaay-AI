@@ -582,8 +582,8 @@ def page_chat():
 
 @app.get("/onboarding/name", response_class=HTMLResponse)
 def page_onboarding_name():
-    """Onboarding Step 1: Collect Name (onboarding.html)."""
-    return serve_html("onboarding.html")
+    """Onboarding Step 1: Collect Name (onboarding-name.html)."""
+    return serve_html("onboarding-name.html")
 
 
 @app.get("/onboarding/income", response_class=HTMLResponse)
@@ -627,31 +627,6 @@ def page_cross_cutting_states():
     """Cross-cutting UI states: Skeleton & gentle error recovery (cross-cutting-states.html)."""
     return serve_html("cross-cutting-states.html")
 
-
-# Whitelisted Stitch UI Reference Frames
-STITCH_PAGE_WHITELIST: Dict[str, str] = {
-    "privacy": "stitch_privacy_consent.html",
-    "chat": "stitch_chat_assistant.html",
-    "cross-cutting": "stitch_cross_cutting_states.html",
-    "onboarding-completed": "stitch_onboarding_completed.html",
-    "onboarding-confirm": "stitch_onboarding_confirm.html",
-    "onboarding-income": "stitch_onboarding_income.html",
-    "onboarding-name": "stitch_onboarding_name.html",
-    "onboarding-purpose": "stitch_onboarding_purpose.html",
-    "profile": "stitch_profile_settings.html",
-    "recommendation": "stitch_recommendation_detail.html",
-    "master": "stitch.html",
-}
-
-
-@app.get("/stitch/{page}", response_class=HTMLResponse)
-def page_stitch_whitelisted(page: str):
-    """Serves 1:1 Stitch design system frames validated against an explicit whitelist."""
-    normalized_key = page.lower().replace(".html", "").replace("_", "-")
-    target_file = STITCH_PAGE_WHITELIST.get(normalized_key)
-    if not target_file:
-        raise HTTPException(status_code=404, detail=f"Stitch design frame '{page}' not found or not in allowed list.")
-    return serve_html(target_file)
 
 
 # Legacy continuity redirects (clean redirects, not duplicate handlers)

@@ -102,16 +102,15 @@ if __name__ == "__main__":
             all_routes_ok = False
         print(f"  {path:<26} -> Status: {r['status']} | Latency: {r['elapsed_ms']:>6.1f}ms | HTML: {'YES' if is_html else 'NO'}")
 
-    # 3. Stitch Dynamic Whitelisting & Path-Traversal Security
-    print("\n--- 3. STITCH WHITELISTING & PATH-TRAVERSAL SECURITY ---")
-    stitch_checks = [
-        ("/stitch/chat", [200], "Valid Stitch chat frame"),
-        ("/stitch/privacy", [200], "Valid Stitch privacy frame"),
-        ("/stitch/onboarding-name", [200], "Valid Stitch onboarding frame"),
-        ("/stitch/unlisted_page_forbidden", [404], "Unlisted page must return 404"),
-        ("/stitch/../../etc/passwd", [400, 404], "Path traversal attempt rejected with 400 or 404"),
+    # 3. Path-Traversal & Unlisted Route Security
+    print("\n--- 3. PATH-TRAVERSAL & UNLISTED ROUTE SECURITY ---")
+    security_checks = [
+        ("/stitch/chat", [404], "Retired Stitch route returns 404"),
+        ("/stitch/privacy", [404], "Retired Stitch route returns 404"),
+        ("/unlisted_page_forbidden", [404], "Unlisted page returns 404"),
+        ("/../../etc/passwd", [400, 404], "Path traversal attempt rejected with 400 or 404"),
     ]
-    for path, exp_statuses, desc in stitch_checks:
+    for path, exp_statuses, desc in security_checks:
         r = make_request(path)
         matched = r["status"] in exp_statuses
         print(f"  {path:<35} -> Status: {r['status']} (Expected {exp_statuses}) | Match: {'PASS' if matched else 'FAIL'} ({desc})")

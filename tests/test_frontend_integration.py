@@ -38,8 +38,16 @@ def test_legacy_continuity_redirects():
     """Verify legacy paths cleanly redirect via 307 to canonical destinations without route multiplication."""
     redirect_checks = [
         ("/app", "/"),
-        ("/onboarding", "/onboarding/name"),
+        ("/app.html", "/"),
+        ("/index.html", "/"),
+        ("/dashboard.html", "/dashboard"),
+        ("/chat.html", "/chat"),
+        ("/profile-settings.html", "/profile"),
         ("/recommendation", "/recommendation/detail"),
+        ("/recommendation.html", "/recommendation/detail"),
+        ("/onboarding", "/onboarding/name"),
+        ("/onboarding.html", "/onboarding/name"),
+        ("/states.html", "/cross-cutting-states"),
     ]
 
     for legacy_path, target_path in redirect_checks:
@@ -48,20 +56,12 @@ def test_legacy_continuity_redirects():
         assert resp.headers.get("location") == target_path
 
 
-def test_stitch_whitelisting_security():
-    """Verify that /stitch/{page} only serves whitelisted pages and blocks arbitrary paths / traversal."""
-    # 1. Allowed whitelisted pages
-    valid_pages = ["privacy", "chat", "profile", "recommendation", "master", "cross-cutting"]
-    for page in valid_pages:
-        resp = client.get(f"/stitch/{page}")
-        assert resp.status_code == 200, f"Whitelisted stitch page '{page}' failed: {resp.status_code}"
-        assert "text/html" in resp.headers.get("content-type", "")
-
-    # 2. Blocked / non-whitelisted paths
-    invalid_pages = ["non_existent_page", "../main.py", "passwords", "etc/passwd", "arbitrary_test"]
-    for page in invalid_pages:
-        resp = client.get(f"/stitch/{page}")
-        assert resp.status_code == 404, f"Unlisted stitch path '{page}' should return 404, got {resp.status_code}"
+def test_frontend_security_and_traversal_rejection():
+    """Verify that unlisted pages, retired paths, and path traversal attempts are safely rejected with 404."""
+    invalid_pages = ["/stitch/privacy", "/stitch/chat", "/non_existent_page", "/../main.py", "/etc/passwd", "/arbitrary_test"]
+    for path in invalid_pages:
+        resp = client.get(path)
+        assert resp.status_code == 404, f"Unlisted/retired path '{path}' should return 404, got {resp.status_code}"
 
 
 def test_onboarding_thin_aliases_and_state_machine():

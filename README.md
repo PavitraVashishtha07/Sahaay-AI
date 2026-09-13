@@ -37,8 +37,7 @@ sahaay-ai/
 │       ├── chat-assistant.html    # Multilingual Voice & Chat (served at /chat)
 │       ├── onboarding-*.html      # 5-Step Vernacular Onboarding Flow
 │       ├── recommendation-detail.html # Product Suitability Deep-Dive
-│       ├── profile.html           # Customer Profile & Language Settings
-│       └── stitch_*.html          # 1:1 Design System Reference Frames
+│       └── profile.html           # Customer Profile & Language Settings
 ├── reference/
 │   └── voice_chat_demo.html       # Reference implementation artifact for Web Speech ASR/TTS
 ├── tests/                         # Comprehensive unit & integration tests
@@ -115,7 +114,6 @@ All secrets and settings are injected via environment variables. **No API keys o
 - `GET /recommendation/detail` — Recommendation Suitability Deep-Dive.
 - `GET /profile` — Customer Profile & 10-Language Settings.
 - `GET /cross-cutting-states` — Cross-cutting UI States (Skeleton Loading & Gentle Recovery).
-- `GET /stitch/{page}` — Whitelisted 1:1 Stitch Design System Frames.
 
 ### 2. Customer Intelligence & Analytics APIs
 - `GET /health` — Health check endpoint (`{"status": "ok"}`).
