@@ -29,9 +29,19 @@ sahaay-ai/
 ├── app/
 │   └── main.py                    # FastAPI REST API with dynamic CORS & RBAC security gateway
 ├── data/                          # Datasets (compressed transactions.csv.gz for cloud deployments)
+├── frontend/
+│   └── public/                    # Production Vernacular Banking UI & Decision Sandbox
+│       ├── css/sahaay-app.css     # Shared styling tokens & design system
+│       ├── app.html               # Customer Portal (served at /)
+│       ├── dashboard.html         # Decision Sandbox (served at /dashboard)
+│       ├── chat-assistant.html    # Multilingual Voice & Chat (served at /chat)
+│       ├── onboarding-*.html      # 5-Step Vernacular Onboarding Flow
+│       ├── recommendation-detail.html # Product Suitability Deep-Dive
+│       ├── profile.html           # Customer Profile & Language Settings
+│       └── stitch_*.html          # 1:1 Design System Reference Frames
 ├── reference/
-│   └── voice_chat_demo.html       # Reference frontend implementation for Web Speech ASR/TTS
-├── tests/                         # 71 comprehensive unit & integration tests
+│   └── voice_chat_demo.html       # Reference implementation artifact for Web Speech ASR/TTS
+├── tests/                         # Comprehensive unit & integration tests
 ├── render.yaml                    # Render Blueprint configuration
 ├── railway.json                   # Railway Nixpacks deployment configuration
 ├── Procfile                       # Process configuration (uvicorn start command)
@@ -40,21 +50,30 @@ sahaay-ai/
 
 ---
 
+## Deployment Architecture
+
+Sahaay AI adopts a **unified single-deployment model**:
+- The FastAPI application serves both the **REST intelligence APIs** and the **production frontend UI routes** directly as static and dynamic pages.
+- This unified model supersedes earlier two-deployment CORS arrangements, eliminating CORS failure points and offering zero-latency, highly reliable single-container hosting on Render, Railway, or Docker.
+- The CORS configuration (`ALLOWED_ORIGINS=*`) is preserved for local development flexibility but is no longer load-bearing for the production path.
+
+---
+
 ## Cloud Deployment Guide (Render / Railway)
 
 ### 1. Render Deployment (Recommended)
-1. Fork or push this repository to GitHub: `https://github.com/PavitraVashishtha07/Sahaay-AI.git`.
+1. Push this repository to GitHub.
 2. In the [Render Dashboard](https://dashboard.render.com/), click **New +** -> **Web Service** (or **Blueprint**).
-3. Connect your repository. Render automatically reads [`render.yaml`](file:///c:/Users/Pavitra/OneDrive/Desktop/HackOut/New%20folder/sahaay-ai/render.yaml) or you can manually configure:
+3. Connect your repository. Render automatically reads [`render.yaml`](file:///c:/Users/Pavitra/OneDrive/Desktop/HackOut/New%20folder/sahaay-ai/render.yaml):
    - **Environment**: `Python`
    - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-4. In the **Environment Variables** section, configure the required variables listed below.
+4. Set `GEMINI_API_KEY` (optional) in Environment Variables.
 5. Click **Deploy Web Service**.
 
 ### 2. Railway Deployment
 1. In the [Railway Dashboard](https://railway.app/), click **New Project** -> **Deploy from GitHub repo**.
-2. Railway will automatically detect [`railway.json`](file:///c:/Users/Pavitra/OneDrive/Desktop/HackOut/New%20folder/sahaay-ai/railway.json) / [`Procfile`](file:///c:/Users/Pavitra/OneDrive/Desktop/HackOut/New%20folder/sahaay-ai/Procfile).
+2. Railway automatically detects [`railway.json`](file:///c:/Users/Pavitra/OneDrive/Desktop/HackOut/New%20folder/sahaay-ai/railway.json) / [`Procfile`](file:///c:/Users/Pavitra/OneDrive/Desktop/HackOut/New%20folder/sahaay-ai/Procfile).
 3. Add environment variables under the **Variables** tab.
 
 ---
@@ -67,7 +86,7 @@ All secrets and settings are injected via environment variables. **No API keys o
 |---|---|---|---|
 | `GEMINI_API_KEY` | Optional (Recommended) | *None* | Google Gemini API key for multilingual intent & entity extraction (`gemini-2.5-flash`). If omitted, Sahaay AI automatically operates using its built-in deterministic regex fallback engine with zero downtime. |
 | `PORT` | Auto-set | `8000` | Port on which the Uvicorn ASGI server listens. Automatically provided by Render and Railway. |
-| `ALLOWED_ORIGINS` | Optional | `*` | Comma-separated list of allowed frontend domains for CORS (e.g. `https://sahaay-frontend.vercel.app,http://localhost:3000`). Default `*` allows seamless teammate frontend connectivity. |
+| `ALLOWED_ORIGINS` | Optional | `*` | Comma-separated list of allowed frontend domains for CORS (e.g. `http://localhost:3000`). Default `*` maintains local dev flexibility (non-load-bearing in production). |
 | `GEMINI_MODEL` | Optional | `gemini-2.5-flash` | Gemini model variant used for language detection and JSON slot extraction. |
 | `GEMINI_TIMEOUT_SECONDS` | Optional | `3.5` | Fast timeout threshold for Gemini API requests before automatically falling back to regex extraction to preserve sub-second latency. |
 
@@ -82,14 +101,25 @@ All secrets and settings are injected via environment variables. **No API keys o
 
 ---
 
-## Core API Endpoints
+## Canonical Application & API Endpoints
 
-### 1. System Health & Metadata
-- `GET /health` — Health check endpoint (returns `{"status": "ok"}`).
+### 1. Frontend Page Routes
+- `GET /` — Vernacular Banking Customer Portal (`app.html`).
+- `GET /dashboard` — Decision Sandbox & Intelligence Telemetry Dashboard (`dashboard.html`).
+- `GET /chat` — Multilingual Conversational AI Assistant (`chat-assistant.html`).
+- `GET /onboarding/name` — Onboarding Step 1: Collect Name.
+- `GET /onboarding/income` — Onboarding Step 2: Income Type.
+- `GET /onboarding/purpose` — Onboarding Step 3: Purpose Selection.
+- `GET /onboarding/confirm` — Onboarding Step 4: Confirmation & Summary.
+- `GET /onboarding/completed` — Onboarding Step 5: Completion & Celebration.
+- `GET /recommendation/detail` — Recommendation Suitability Deep-Dive.
+- `GET /profile` — Customer Profile & 10-Language Settings.
+- `GET /cross-cutting-states` — Cross-cutting UI States (Skeleton Loading & Gentle Recovery).
+- `GET /stitch/{page}` — Whitelisted 1:1 Stitch Design System Frames.
+
+### 2. Customer Intelligence & Analytics APIs
+- `GET /health` — Health check endpoint (`{"status": "ok"}`).
 - `GET /personas` — Returns the 4 demo personas with archetype and customer IDs.
-- `GET /customers` — List of all customer IDs in the system.
-
-### 2. Customer Intelligence & Analytics
 - `GET /customers/{id}/profile` — 38-feature unified profile with ground truth stripped.
 - `GET /customers/{id}/stress` — Auditable weighted stress score, risk band, and causal drivers.
 - `GET /customers/{id}/fraud` — Unsupervised Isolation Forest anomaly score and novelty flags.
@@ -100,11 +130,31 @@ All secrets and settings are injected via environment variables. **No API keys o
 - `POST /customers/{id}/arbitrate` — POST variant supporting explicit customer intents and context payloads.
 
 ### 4. Grounded Multilingual Conversational Layer (Section 5)
-- `POST /customers/{id}/chat` — Multi-language natural language conversation layer:
-  - Supports 10 Indian languages: English (`en`), Hindi (`hi`), Gujarati (`gu`), Marathi (`mr`), Tamil (`ta`), Telugu (`te`), Bengali (`bn`), Kannada (`kn`), Punjabi (`pa`), Malayalam (`ml`).
-  - Gemini Flash performs extraction only (intent, language, entities) — it never sees raw transaction data and never fabricates balances.
-  - Responses are deterministically compiled from verified backend financial facts.
-  - Returns `tts_supported: true` and speech synthesis metadata.
+- `POST /customers/{id}/chat` — Multi-language natural language conversation layer (10 Indic languages).
+- `GET /customers/{id}/onboarding-state` — Retrieves current onboarding KYC step.
+- `POST /customers/{id}/onboarding-step` — Progresses onboarding KYC state machine.
+
+---
+
+## Security Gateway & RBAC Access Matrix (Section 7)
+
+Sahaay AI enforces role-based access control (RBAC) via the `X-User-Role` request header (defaulting to the least-privileged `user` role when omitted). All operations on sensitive and protected routes are strictly verified and logged to `logs/audit.jsonl`.
+
+| Endpoint | `db_admin` | `admin` | `backend` | `analyst` | `user` | `chatbot` | Data Scope / Action Permitted |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| `GET /customers/{id}/data` | ✅ Allowed | ❌ 403 | ❌ 403 | ❌ 403 | ❌ 403 | ❌ 403 | Raw unmasked financial data (accounts, txns, EMIs) |
+| `GET /admin/audit-log` | ❌ 403 | ✅ Allowed | ❌ 403 | ❌ 403 | ❌ 403 | ❌ 403 | Immutable administrative audit trail |
+| `GET /customers/{id}/stress` | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ❌ 403 | Stress score, band, causal drivers, Isolation Forest check |
+| `GET /customers/{id}/fraud` | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ❌ 403 | Behavioral anomaly score, signals, novelty flags |
+| `GET /customers/{id}/recommendations` | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | Sanitized suitability & SHAP reasons (**never raw data**) |
+| `GET/POST /customers/{id}/arbitrate` | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | 6-Tier priority governance decision + audit record |
+| `POST /customers/{id}/chat` | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | Grounded conversational assistant + audit record |
+| `POST /consent/revoke` | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | Immediate AA consent revocation + audit record |
+| `POST /onboarding/{id}/step` | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | ✅ Allowed | KYC state machine step progression |
+
+> [!NOTE]
+> **Customer-Scoping & Identity Binding Boundary**:
+> Under the hackathon demonstration scope, RBAC is enforced at the **role level** without stateful OAuth2 JWT/mTLS token identity binding to a specific `customer_id`. In a production banking deployment, the Security Gateway validates a cryptographic JWT bearer token (`sub: customer_id`) and ensures `url.customer_id == token.customer_id`. For hackathon evaluation, all 4 customer personas and sandbox records are testable through the standard `user` and `analyst` roles.
 
 ---
 
@@ -114,14 +164,10 @@ All secrets and settings are injected via environment variables. **No API keys o
 # 1. Install dependencies
 pip install -r requirements.txt
 
-# 2. Run the test suite (71 tests)
+# 2. Run the full test suite (87 tests)
 pytest -v
 
 # 3. Start local development server
 uvicorn app.main:app --reload --port 8000
 ```
 
----
-
-## Note on Scaffold Dashboard
-The `/dashboard` and `/app` routes in [`app/main.py`](file:///c:/Users/Pavitra/OneDrive/Desktop/HackOut/New%20folder/sahaay-ai/app/main.py) serve an internal HTML/JS verification scaffold for developer sanity checks. The real production frontend is maintained in a separate repository by the frontend team.

@@ -192,3 +192,105 @@ def test_chat_endpoint_contract_with_optional_language():
     assert "path_used" in data
     assert "facts_used" in data
     assert "timestamp" in data
+
+
+def test_rbac_missing_role_header_defaults_to_safe_user_role():
+    """
+    Verifies that omitting the X-User-Role header defaults safely to 'user':
+    - Raw database dumps (/data) return 403 Forbidden.
+    - Admin audit logs (/admin/audit-log) return 403 Forbidden.
+    - Standard user endpoints (/recommendations, /chat) succeed safely without leaking raw data.
+    - Audit log records 'user' as the caller role.
+    """
+    # 1. Omitting header on /data MUST 403
+    res_raw = client.get(f"/customers/{CUSTOMER_ID}/data?consent_id={CONSENT_ID}")
+    assert res_raw.status_code == 403
+    assert "db_admin role required" in res_raw.json()["detail"]
+    assert "current role: 'user'" in res_raw.json()["detail"]
+
+    # 2. Omitting header on /admin/audit-log MUST 403
+    res_admin = client.get("/admin/audit-log")
+    assert res_admin.status_code == 403
+    assert "admin role required" in res_admin.json()["detail"]
+    assert "current role: 'user'" in res_admin.json()["detail"]
+
+    # 3. Omitting header on /recommendations succeeds safely (user role allowed)
+    res_rec = client.get(f"/customers/{CUSTOMER_ID}/recommendations")
+    assert res_rec.status_code == 200
+    rec_data = res_rec.json()
+    assert "recommended_products" in rec_data
+    assert "transactions" not in rec_data
+    assert "accounts" not in rec_data
+
+    # 4. Omitting header on /chat succeeds and logs as 'user'
+    res_chat = client.post(
+        f"/customers/{CUSTOMER_ID}/chat",
+        json={"message": "Can I check my current balance?"}
+    )
+    assert res_chat.status_code == 200
+    # Check audit log to ensure recorded role is 'user'
+    res_log = client.get("/admin/audit-log", headers={"X-User-Role": "admin"})
+    assert res_log.status_code == 200
+    logs = res_log.json()["audit_logs"]
+    chat_log = next((l for l in reversed(logs) if l["endpoint"] == f"/customers/{CUSTOMER_ID}/chat"), None)
+    assert chat_log is not None
+    assert chat_log["role"] == "user"
+
+
+def test_rbac_analyst_role_scope():
+    """
+    Formalizes the 'analyst' role scope:
+    - ALLOWED: /arbitrate, /stress, /fraud, /recommendations (for decision sandbox evaluation)
+    - FORBIDDEN (403): /data (raw database records) and /admin/audit-log (system audit trail)
+    """
+    headers = {"X-User-Role": "analyst"}
+
+    # 1. Allowed endpoints
+    res_arb = client.get(f"/customers/{CUSTOMER_ID}/arbitrate", headers=headers)
+    assert res_arb.status_code == 200
+
+    res_stress = client.get(f"/customers/{CUSTOMER_ID}/stress", headers=headers)
+    assert res_stress.status_code == 200
+
+    res_fraud = client.get(f"/customers/{CUSTOMER_ID}/fraud", headers=headers)
+    assert res_fraud.status_code == 200
+
+    res_rec = client.get(f"/customers/{CUSTOMER_ID}/recommendations", headers=headers)
+    assert res_rec.status_code == 200
+
+    # 2. Blocked endpoints (403 Forbidden)
+    res_raw = client.get(f"/customers/{CUSTOMER_ID}/data?consent_id={CONSENT_ID}", headers=headers)
+    assert res_raw.status_code == 403
+    assert "db_admin role required" in res_raw.json()["detail"]
+
+    res_admin = client.get("/admin/audit-log", headers=headers)
+    assert res_admin.status_code == 403
+    assert "admin role required" in res_admin.json()["detail"]
+
+
+def test_rbac_customer_scoping_hackathon_contract():
+    """
+    Documents and verifies customer-scoping behavior under hackathon contract:
+    - In hackathon mode (stateless simulated RBAC without user-bound JWT sessions),
+      role-level gating is strictly enforced (e.g. user cannot access /data or /admin/audit-log).
+    - Multi-tenant customer identity binding (JWT sub: customer_id) is a documented hackathon-scope
+      boundary, allowing demo personas to be interacted with via the unified user/analyst roles.
+    """
+    other_cust = "cust_9d6cacdc98"
+
+    # User role can interact with consented user endpoints across personas
+    res_chat = client.post(
+        f"/customers/{other_cust}/chat",
+        json={"message": "What is my account summary?"},
+        headers={"X-User-Role": "user"},
+    )
+    assert res_chat.status_code == 200
+
+    # But user role is still strictly forbidden from accessing raw database dumps on ANY customer
+    res_raw_other = client.get(
+        f"/customers/{other_cust}/data?consent_id=consent_7e3cb60db6",
+        headers={"X-User-Role": "user"},
+    )
+    assert res_raw_other.status_code == 403
+
+

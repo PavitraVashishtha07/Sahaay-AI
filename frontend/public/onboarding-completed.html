@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="hi" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sahaay AI — Onboarding: Completed | बधाई हो</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Noto Sans', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              teal: '#00241C',
+              darkTeal: '#073B30',
+              midTeal: '#0F6E56',
+              lightTeal: '#E2F3EB',
+              mint: '#EDF6F0',
+              gold: '#E9A23B',
+              warmGold: '#FFB54D',
+              lightGold: '#FEF6E8',
+              surface: '#F3FBF6'
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 3s ease-in-out infinite'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-6px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @layer base {
+      body {
+        font-family: 'Noto Sans', system-ui, sans-serif;
+        background-color: #F3FBF6;
+        color: #151D1A;
+      }
+    }
+    .pulse-halo {
+      animation: pulseHalo 2.5s infinite;
+    }
+    @keyframes pulseHalo {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 0.2; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .confetti-dot {
+      animation: float 4s ease-in-out infinite alternate;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#F3FBF6] text-neutral-900 selection:bg-[#E9A23B]/30">
+
+  <!-- Interactive Voice Toast (Simulated TTS & Native Web Speech) -->
+  <div id="ttsToast" class="fixed top-24 right-6 z-50 bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl p-4 flex items-center gap-3.5 border border-emerald-900/10 opacity-0 pointer-events-none transition-all duration-300 max-w-sm">
+    <div class="w-11 h-11 rounded-full bg-[#FEF6E8] border border-amber-200 flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-[#E9A23B] animate-pulse text-[22px]">volume_up</span>
+    </div>
+    <div class="flex flex-col">
+      <span class="text-xs font-bold text-[#073B30]">ध्वनि सहायता सक्रिय (Audio Playing)</span>
+      <span class="text-xs text-neutral-600 leading-tight">"बधाई हो कविता जी! आपकी शुरुआत तैयार है।"</span>
+    </div>
+    <button onclick="dismissAudioToast()" class="text-neutral-400 hover:text-neutral-700 ml-1 p-1">
+      <span class="material-symbols-outlined text-[18px]">close</span>
+    </button>
+  </div>
+
+  <!-- BEGIN: Minimal Top Bar Header -->
+  <header class="w-full bg-white/90 backdrop-blur-md border-b border-emerald-950/10 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo Emblem -->
+      <a href="app.html" onclick="if(window.location.pathname.startsWith('/onboarding') || window.location.pathname.startsWith('/app')) this.href='/app';" class="flex items-center space-x-3 group">
+        <div class="w-10 h-10 rounded-xl bg-[#00241C] flex items-center justify-center text-emerald-100 shadow-sm group-hover:scale-105 transition-transform">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
+          </svg>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xl sm:text-2xl font-black tracking-tight text-[#00241C]">
+              Sahaay <span class="text-[#0F6E56]">AI</span>
+            </span>
+            <span class="bg-[#E2F3EB] text-[#073B30] text-[10px] font-bold px-1.5 py-0.5 rounded">भारत</span>
+          </div>
+          <span class="text-[11px] text-neutral-500 -mt-0.5">सहाय AI - सरल और सुरक्षित बैंकिंग</span>
+        </div>
+      </a>
+
+      <!-- Navigation & Action Controls -->
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        <!-- Verified Customer Badge -->
+        <div class="hidden md:flex items-center gap-2 bg-[#E2F3EB] border border-emerald-200 text-[#073B30] px-3 py-1.5 rounded-full text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+          <span>कविता • ID: SHY-8491-KV</span>
+        </div>
+
+        <!-- Language Selector Pill -->
+        <div class="relative">
+          <button class="flex items-center space-x-1.5 bg-[#EDF6F0] hover:bg-[#E2F3EB] border border-emerald-950/10 px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#00241C] transition-colors" type="button">
+            <span>हिन्दी ▾</span>
+          </button>
+        </div>
+
+        <!-- Customer Avatar -->
+        <div class="w-8 h-8 rounded-full bg-[#073B30] text-white flex items-center justify-center text-xs font-bold shadow-xs">
+          क
+        </div>
+      </div>
+
+    </div>
+  </header>
+  <!-- END: Minimal Top Bar Header -->
+
+  <!-- BEGIN: Main Content Area -->
+  <main class="flex-grow max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col items-center">
+
+    <!-- Sub-context Strip -->
+    <div class="w-full flex items-center justify-between mb-4 px-1 text-xs text-neutral-500">
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+          सत्यापित प्रोफाइल / Verified Profile
+        </span>
+        <span class="hidden sm:inline">खाता आईडी: <strong class="text-neutral-700">SHY-8491-KV</strong></span>
+      </div>
+      <div class="flex items-center gap-1 text-neutral-600">
+        <span class="material-symbols-outlined text-[16px] text-emerald-700">wifi</span>
+        <span>सर्वर सुरक्षित (256-bit SSL)</span>
+      </div>
+    </div>
+
+    <!-- BEGIN: 5-Step Visual Journey Progress Bar (ALL 5 STEPS COMPLETED) -->
+    <section aria-label="सफलता यात्रा प्रगति" class="w-full bg-white rounded-2xl p-4 sm:p-6 border border-emerald-950/10 shadow-xs mb-8">
+      <div class="relative flex items-center justify-between">
+        
+        <!-- Continuous Solid Teal Connecting Track (100% Filled) -->
+        <div class="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1.5 bg-[#073B30] rounded-full z-0 transition-all duration-700"></div>
+
+        <!-- Step 1: Completed (Name) -->
+        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = window.location.pathname.startsWith('/onboarding') ? '/onboarding' : 'onboarding.html'">
+          <div class="w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-[#073B30] text-white flex items-center justify-center font-bold text-sm shadow-sm ring-4 ring-white">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+            </svg>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center text-[9px] text-white">✓</span>
+          </div>
+          <span class="mt-2 text-xs font-semibold text-[#073B30]">नाम (name)</span>
+          <span class="text-[10px] text-emerald-800 font-medium">कविता ✓</span>
+        </div>
+
+        <!-- Step 2: Completed (Income Type) -->
+        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = window.location.pathname.startsWith('/onboarding') ? '/onboarding/income' : 'onboarding-income.html'">
+          <div class="w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-[#073B30] text-white flex items-center justify-center font-bold text-sm shadow-sm ring-4 ring-white">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+            </svg>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center text-[9px] text-white">✓</span>
+          </div>
+          <span class="mt-2 text-xs font-semibold text-[#073B30]">आमदनी (income)</span>
+          <span class="text-[10px] text-emerald-800 font-medium">Gig work ✓</span>
+        </div>
+
+        <!-- Step 3: Completed (Purpose) -->
+        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = window.location.pathname.startsWith('/onboarding') ? '/onboarding/purpose' : 'onboarding-purpose.html'">
+          <div class="w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-[#073B30] text-white flex items-center justify-center font-bold text-sm shadow-sm ring-4 ring-white">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+            </svg>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center text-[9px] text-white">✓</span>
+          </div>
+          <span class="mt-2 text-xs font-semibold text-[#073B30]">मकसद (purpose)</span>
+          <span class="text-[10px] text-emerald-800 font-medium">Guide Me ✓</span>
+        </div>
+
+        <!-- Step 4: Completed (Confirm) -->
+        <div class="relative z-10 flex flex-col items-center group cursor-pointer" onclick="location.href = window.location.pathname.startsWith('/onboarding') ? '/onboarding/confirm' : 'onboarding-confirm.html'">
+          <div class="w-10 sm:w-11 h-10 sm:h-11 rounded-full bg-[#073B30] text-white flex items-center justify-center font-bold text-sm shadow-sm ring-4 ring-white">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+            </svg>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center text-[9px] text-white">✓</span>
+          </div>
+          <span class="mt-2 text-xs font-semibold text-[#073B30]">पुष्टि (confirm)</span>
+          <span class="text-[10px] text-emerald-800 font-medium">जाँच पूर्ण ✓</span>
+        </div>
+
+        <!-- Step 5: CELEBRATION NODE (Done - Warm Gold Celebration Styling) -->
+        <div class="relative z-10 flex flex-col items-center">
+          <div class="relative">
+            <!-- Pulsing warm gold glow halo -->
+            <div class="absolute -inset-2 rounded-full bg-[#FFB54D]/50 animate-ping pointer-events-none"></div>
+            <div class="relative w-12 sm:w-13 h-12 sm:h-13 p-0.5 rounded-full bg-gradient-to-tr from-[#E9A23B] via-amber-400 to-yellow-300 shadow-lg">
+              <div class="w-11 sm:w-12 h-11 sm:h-12 rounded-full bg-[#E9A23B] text-white flex items-center justify-center ring-4 ring-white">
+                <span class="material-symbols-outlined text-[24px] font-bold text-white">sports_score</span>
+                <!-- Verified badgelet -->
+                <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#00241C] text-white flex items-center justify-center text-[10px] font-bold border border-white">✓</span>
+              </div>
+            </div>
+          </div>
+          <span class="mt-2 text-xs font-bold text-[#845400] flex items-center gap-0.5 justify-center">
+            संपूर्ण (Done)
+          </span>
+          <span class="text-[9px] font-bold uppercase tracking-wider text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 mt-0.5">यात्रा सफल ✦</span>
+        </div>
+
+      </div>
+    </section>
+    <!-- END: 5-Step Visual Journey Progress Bar -->
+
+    <!-- BEGIN: Main Celebration Container (Warm, Jargon-Free, Zero Form Fields) -->
+    <div class="w-full bg-white rounded-3xl p-6 sm:p-12 border border-emerald-950/10 shadow-lg flex flex-col items-center text-center relative overflow-hidden">
+      
+      <!-- Festive Ambient Background Glows -->
+      <div class="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-200/40 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-20 right-1/4 w-80 h-80 bg-emerald-200/30 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Festive Confetti Accents (SVG) -->
+      <div class="relative mb-6">
+        <svg class="absolute -inset-10 w-[calc(100%+80px)] h-[calc(100%+80px)] pointer-events-none" fill="none" viewBox="0 0 240 240">
+          <circle class="fill-amber-400 confetti-dot" cx="30" cy="40" r="4"></circle>
+          <circle class="fill-[#00241C] confetti-dot" cx="210" cy="50" r="5"></circle>
+          <rect class="fill-[#845400] confetti-dot" height="7" rx="2" transform="rotate(25 190 140)" width="7" x="190" y="140"></rect>
+          <rect class="fill-emerald-400 confetti-dot" height="8" rx="2" transform="rotate(45 40 160)" width="8" x="40" y="160"></rect>
+          <circle class="fill-[#073B30] confetti-dot" cx="70" cy="20" r="3"></circle>
+          <circle class="fill-amber-300 confetti-dot" cx="160" cy="25" r="3.5"></circle>
+          <polygon class="fill-[#E9A23B] confetti-dot" points="120,5 124,15 116,15"></polygon>
+          <polygon class="fill-emerald-600 confetti-dot" points="220,100 226,108 214,108"></polygon>
+        </svg>
+
+        <!-- Golden Seal & Wheat/Leaf Garland Emblem -->
+        <div class="relative w-36 h-36 rounded-full bg-gradient-to-b from-[#FFDDB6] to-[#EDF6F0] flex items-center justify-center p-2 shadow-xl ring-8 ring-[#EDF6F0]">
+          <!-- Inner circle -->
+          <div class="w-full h-full rounded-full bg-white flex flex-col items-center justify-center relative shadow-inner">
+            <!-- Garland Leaves Ring (SVG) -->
+            <svg class="absolute inset-2 w-[calc(100%-16px)] h-[calc(100%-16px)] text-[#845400]" fill="currentColor" viewBox="0 0 100 100">
+              <!-- Left Branch -->
+              <path d="M 22 50 C 22 30 35 18 50 14 C 48 18 43 25 43 32 C 40 26 34 26 31 34 C 35 37 39 42 38 49 C 31 46 26 50 25 58 C 29 59 34 60 37 67 C 30 67 25 73 28 81 C 33 79 38 76 43 82 C 40 86 44 90 50 91 C 36 88 22 72 22 50 Z" opacity="0.85"></path>
+              <!-- Right Branch -->
+              <path d="M 78 50 C 78 30 65 18 50 14 C 52 18 57 25 57 32 C 60 26 66 26 69 34 C 65 37 61 42 62 49 C 69 46 74 50 75 58 C 71 59 66 60 63 67 C 70 67 75 73 72 81 C 67 79 62 76 57 82 C 60 86 56 90 50 91 C 64 88 78 72 78 50 Z" opacity="0.85"></path>
+            </svg>
+            <!-- Central Shield & Checkmark -->
+            <div class="w-16 h-16 rounded-full bg-[#00241C] text-white flex items-center justify-center shadow-lg transform transition-transform hover:scale-105">
+              <span class="material-symbols-outlined text-[36px] text-emerald-300">verified</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personalized Bilingual Heading -->
+      <div class="flex flex-col items-center max-w-2xl">
+        <h1 class="text-2xl sm:text-4xl font-bold text-[#00241C] tracking-tight leading-snug">
+          बधाई हो कविता जी! आपकी शुरुआत तैयार है।
+        </h1>
+        <p class="text-base sm:text-xl font-medium text-neutral-600 mt-2">
+          All set, Kavita! You're ready to go.
+        </p>
+
+        <!-- Read-Aloud Voice Button -->
+        <button onclick="triggerVoiceSummary()" class="mt-4 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#FEF6E8] hover:bg-[#faebd0] text-[#845400] font-bold text-xs sm:text-sm border border-amber-200 shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer" type="button">
+          <span class="material-symbols-outlined text-[18px] text-[#E9A23B]">volume_up</span>
+          <span>🔊 सुनें / Listen to summary</span>
+        </button>
+      </div>
+
+      <!-- Zero-Jargon Reassuring Subtitle Box -->
+      <div class="mt-7 max-w-xl w-full bg-[#EDF6F0]/80 border border-emerald-200/80 rounded-2xl p-4 sm:p-5 text-center">
+        <p class="text-sm sm:text-base text-[#00241C] font-normal leading-relaxed">
+          "हम आपकी दी गई जानकारी के अनुसार केवल वही विकल्प दिखाएंगे जो सच में आपके काम आएं — कोई बेवजह की शर्तें नहीं।"
+        </p>
+        <p class="mt-2 text-xs sm:text-sm text-neutral-600 italic">
+          "We'll use what you told us to show you options that genuinely work for you — zero guesswork, no confusing fine print."
+        </p>
+      </div>
+
+      <!-- Primary CTA: Go to My Dashboard with Auto-Redirect Timer -->
+      <div class="mt-8 flex flex-col items-center w-full max-w-md">
+        <a id="dashboardCta" href="app.html" onclick="if(window.location.pathname.startsWith('/onboarding') || window.location.pathname.startsWith('/dashboard')) this.href='/dashboard';" class="w-full flex items-center justify-center gap-3 bg-[#00241C] hover:bg-[#073B30] active:bg-[#001712] text-white font-bold text-base sm:text-lg py-4 px-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 group cursor-pointer">
+          <span class="font-bold">मेरे डैशबोर्ड पर चलें</span>
+          <span class="text-emerald-300 font-normal">| Go to my dashboard</span>
+          <span class="material-symbols-outlined text-[22px] text-[#E9A23B] transform group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+        </a>
+
+        <!-- Animated 5-Second Countdown Indicator -->
+        <div class="w-full mt-4 flex flex-col items-center gap-1.5">
+          <div class="w-full bg-neutral-200 rounded-full h-1.5 overflow-hidden">
+            <div id="redirectBar" class="h-full bg-[#E9A23B] transition-all duration-1000 ease-linear w-full"></div>
+          </div>
+          <p class="text-xs text-neutral-500 flex items-center gap-1 text-center">
+            <span>⏱️</span>
+            <span><strong id="secondsCounter" class="text-[#00241C] font-bold">5</strong> सेकंड में स्वतः आगे बढ़ेंगे (Auto-redirecting in 5s...) या तुरंत आगे बढ़ने के लिए ऊपर टैप करें</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Trust & Safety Strip -->
+      <div class="mt-10 pt-6 border-t border-emerald-950/10 w-full flex flex-col items-center gap-2">
+        <div class="inline-flex items-center gap-2 text-[#00241C] text-xs sm:text-sm font-medium bg-[#E2F3EB] px-4 py-1.5 rounded-full border border-emerald-200">
+          <span class="material-symbols-outlined text-[18px] text-emerald-800">lock</span>
+          <span>आपकी जानकारी 100% सुरक्षित और गोपनीय है • Bank-grade 256-bit encryption</span>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-neutral-500 text-xs mt-2">
+          <span class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px] text-emerald-700">verified_user</span>
+            RBI Regulated Entities Partner
+          </span>
+          <span>•</span>
+          <span class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px] text-emerald-700">flag</span>
+            100% Data in India (MeitY Guidelines)
+          </span>
+          <span>•</span>
+          <span class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px] text-emerald-700">gavel</span>
+            DPDP Act 2023 Compliant
+          </span>
+        </div>
+      </div>
+
+    </div>
+    <!-- END: Main Celebration Container -->
+
+    <!-- Interactive Human Assistance Banner Strip (Matching Stitch) -->
+    <div class="w-full mt-6 bg-[#EDF6F0] rounded-2xl p-4 sm:p-5 border border-emerald-200/80 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-xl bg-[#E9A23B] text-white flex items-center justify-center shrink-0 shadow-sm">
+          <span class="material-symbols-outlined text-[28px]">headset_mic</span>
+        </div>
+        <div class="text-left">
+          <h4 class="text-xs sm:text-sm font-bold text-[#00241C]">क्या आप किसी वास्तविक इंसान से बात करना चाहते हैं?</h4>
+          <p class="text-xs text-neutral-600 mt-0.5">हमारे सहायक आपकी स्थानीय भाषा (हिंदी/मराठी/भोजपुरी) में बिना किसी शुल्क के उपलब्ध हैं।</p>
+        </div>
+      </div>
+      <button onclick="openSupportModal()" class="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-[#845400] font-bold text-xs sm:text-sm hover:bg-neutral-50 transition-all shadow-xs border border-amber-200" type="button">
+        <span class="material-symbols-outlined text-[18px]">call</span>
+        <span>🎧 सहायक से बात करें / Talk to a person</span>
+      </button>
+    </div>
+
+    <!-- Developer Spec Card (From Stitch Node) -->
+    <section class="w-full mt-6 bg-white/70 rounded-2xl p-5 border border-emerald-950/10 text-left">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="material-symbols-outlined text-[#00241C] text-[20px]">architecture</span>
+        <h3 class="text-xs font-bold text-[#00241C] uppercase tracking-wider">
+          Interaction Architecture &amp; Transition Choreography (Developer Spec)
+        </h3>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-neutral-600">
+        <div class="p-3 bg-white rounded-xl border border-neutral-200/80">
+          <div class="font-bold text-[#00241C] mb-1 flex items-center gap-1.5">
+            <span class="w-4 h-4 rounded-full bg-[#E2F3EB] text-[#00241C] flex items-center justify-center text-[10px]">1</span>
+            Choreographed Sequence
+          </div>
+          <p class="leading-relaxed text-[11px]">
+            <strong>0–300ms:</strong> Progress line tracks to Step 5.<br>
+            <strong>300–600ms:</strong> Warm gold node emits celebratory ping glow.<br>
+            <strong>600–900ms:</strong> Wheat Garland badge scales with spring ease.<br>
+            <strong>900–1200ms:</strong> Bilingual greeting and auto-advancing CTA trigger.
+          </p>
+        </div>
+        <div class="p-3 bg-white rounded-xl border border-neutral-200/80">
+          <div class="font-bold text-[#845400] mb-1 flex items-center gap-1.5">
+            <span class="w-4 h-4 rounded-full bg-amber-100 text-[#845400] flex items-center justify-center text-[10px]">2</span>
+            Multimodal TTS Engine
+          </div>
+          <p class="leading-relaxed text-[11px]">
+            Auto-synthesizes speech in selected vernacular: <em>"बधाई हो कविता जी! आपकी शुरुआत तैयार है..."</em> Skips technical metadata to avoid cognitive clutter for low-literacy users.
+          </p>
+        </div>
+        <div class="p-3 bg-white rounded-xl border border-neutral-200/80">
+          <div class="font-bold text-[#00241C] mb-1 flex items-center gap-1.5">
+            <span class="w-4 h-4 rounded-full bg-[#E2F3EB] text-[#00241C] flex items-center justify-center text-[10px]">3</span>
+            Backend Arbitrate Handshake
+          </div>
+          <p class="leading-relaxed text-[11px]">
+            At <strong>0s</strong> timeout or immediate tap, dispatches:
+            <code class="text-[10px] bg-neutral-100 px-1 py-0.5 rounded font-mono block mt-1">GET /customers/SHY-8491-KV/arbitrate</code>
+            Performs seamless cross-fade directly into tailored Dashboard view.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <!-- END: Main Content Area -->
+
+  <!-- BEGIN: Regulatory Footer -->
+  <footer class="w-full bg-white/70 border-t border-emerald-950/10 py-4 px-6 text-center text-xs text-neutral-500">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+        <span class="font-semibold text-neutral-700">Sahaay AI Vernacular Banking Stack</span>
+        <span>•</span>
+        <span>National Helpline: 1800-209-7242</span>
+      </div>
+      <div>
+        © 2026 Sahaay AI Technologies Pvt. Ltd. सर्व अधिकार सुरक्षित।
+      </div>
+    </div>
+  </footer>
+  <!-- END: Regulatory Footer -->
+
+  <!-- BEGIN: Persistent Floating Voice/Human Assist (Bottom Right) -->
+  <aside class="fixed bottom-6 right-6 z-50">
+    <button onclick="openSupportModal()" class="flex items-center gap-2.5 bg-gradient-to-r from-[#E9A23B] to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#00241C] font-bold text-xs sm:text-sm px-4 py-3 rounded-full shadow-lg hover:shadow-xl active:scale-95 transition-all border-2 border-white cursor-pointer" title="सहायक से बात करें / Talk to a person" type="button">
+      <div class="w-7 h-7 rounded-full bg-white/90 flex items-center justify-center text-[#00241C] shadow-xs">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+      </div>
+      <div class="text-left leading-tight pr-1">
+        <span class="block text-xs font-semibold text-amber-950">सहायक से बात करें</span>
+        <span class="text-[11px] font-normal text-amber-900">Talk to a person</span>
+      </div>
+    </button>
+  </aside>
+  <!-- END: Persistent Floating Voice/Human Assist -->
+
+  <!-- Live Support Specialist Modal -->
+  <div id="supportModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 text-center">
+      <div class="w-14 h-14 bg-amber-100 text-[#E9A23B] rounded-full mx-auto flex items-center justify-center text-2xl mb-4">
+        🎧
+      </div>
+      <h3 class="text-lg font-bold text-[#00241C]">सहायक सहायता उपलब्ध है</h3>
+      <p class="text-xs text-amber-800 font-semibold mt-1">Live Human Specialist 24x7</p>
+      <p class="text-sm text-neutral-600 mt-3 leading-relaxed">
+        नमस्ते कविता जी! हमारे वित्तीय सहायक आपकी स्थानीय भाषा (हिंदी/मराठी) में सहायता के लिए उपलब्ध हैं।
+      </p>
+      <div class="mt-6 space-y-2.5">
+        <a href="tel:18002097242" class="block w-full py-3 rounded-xl bg-[#00241C] text-white font-semibold text-sm hover:bg-[#073B30] shadow transition">
+          कॉल करें: 1800-209-7242 (निःशुल्क)
+        </a>
+        <button onclick="closeSupportModal()" class="w-full py-2.5 rounded-xl border border-neutral-300 text-xs font-semibold text-neutral-700 hover:bg-neutral-50">
+          बंद करें (Close)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Scripts -->
+  <script>
+    let remainingSeconds = 5;
+    let countdownTimer = null;
+    let isPaused = false;
+
+    function startCountdown() {
+      const counterEl = document.getElementById('secondsCounter');
+      const barEl = document.getElementById('redirectBar');
+
+      countdownTimer = setInterval(() => {
+        if (isPaused) return;
+
+        remainingSeconds -= 1;
+        if (counterEl) counterEl.innerText = remainingSeconds;
+        if (barEl) barEl.style.width = (remainingSeconds / 5 * 100) + '%';
+
+        if (remainingSeconds <= 0) {
+          clearInterval(countdownTimer);
+          triggerDashboardRedirect();
+        }
+      }, 1000);
+    }
+
+    function triggerDashboardRedirect() {
+      const cta = document.getElementById('dashboardCta');
+      if (cta) {
+        cta.innerHTML = `
+          <svg class="w-5 h-5 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          </svg>
+          <span>डैशबोर्ड लोड हो रहा है... (Loading...)</span>
+        `;
+      }
+      setTimeout(() => {
+        const dest = window.location.pathname.startsWith('/onboarding') ? '/dashboard' : 'app.html';
+        window.location.href = dest;
+      }, 400);
+    }
+
+    function triggerVoiceSummary() {
+      const toast = document.getElementById('ttsToast');
+      if (toast) {
+        toast.classList.remove('opacity-0', 'pointer-events-none');
+        toast.classList.add('opacity-100');
+      }
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const text = "बधाई हो कविता जी! आपकी शुरुआत तैयार है। हम आपकी दी गई जानकारी के अनुसार केवल वही विकल्प दिखाएंगे जो सच में आपके काम आएं — कोई बेवजह की शर्तें नहीं।";
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'hi-IN';
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function dismissAudioToast() {
+      const toast = document.getElementById('ttsToast');
+      if (toast) {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function openSupportModal() {
+      isPaused = true;
+      const m = document.getElementById('supportModal');
+      if (m) m.classList.remove('hidden');
+    }
+
+    function closeSupportModal() {
+      isPaused = false;
+      const m = document.getElementById('supportModal');
+      if (m) m.classList.add('hidden');
+    }
+
+    // Initialize countdown on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      startCountdown();
+    });
+  </script>
+</body>
+</html>

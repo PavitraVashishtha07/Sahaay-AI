@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-secondary-fixed-variant": "#643f00",
+          "surface-container-high": "#e2eae5",
+          "tertiary-container": "#003c2d",
+          "surface-container-lowest": "#ffffff",
+          "surface-container-low": "#edf6f0",
+          "outline-variant": "#c0c8c4",
+          "surface-tint": "#39675a",
+          "secondary": "#845400",
+          "outline": "#717975",
+          "primary-fixed": "#bceddc",
+          "primary": "#00241c",
+          "on-tertiary-fixed-variant": "#00513e",
+          "surface-dim": "#d3dcd7",
+          "primary-container": "#073b30",
+          "surface-container": "#e7f0eb",
+          "background": "#f3fbf6",
+          "surface": "#f3fbf6",
+          "on-tertiary-fixed": "#002117",
+          "tertiary-fixed-dim": "#84d6b9",
+          "inverse-on-surface": "#eaf3ee",
+          "on-primary-container": "#77a697",
+          "on-surface-variant": "#404945",
+          "on-surface": "#151d1a",
+          "secondary-container": "#ffb54d",
+          "tertiary-fixed": "#a0f3d4",
+          "on-tertiary-container": "#5aab90",
+          "primary-fixed-dim": "#a0d0c1",
+          "on-secondary-container": "#714800",
+          "on-primary": "#ffffff",
+          "secondary-fixed": "#ffddb6",
+          "surface-container-highest": "#dce5df",
+          "surface-variant": "#dce5df",
+          "tertiary": "#00241a",
+          "on-error": "#ffffff",
+          "error-container": "#ffdad6",
+          "inverse-surface": "#2a322f",
+          "on-primary-fixed-variant": "#204f43",
+          "surface-bright": "#f3fbf6",
+          "on-background": "#151d1a",
+          "on-error-container": "#93000a",
+          "secondary-fixed-dim": "#ffb959",
+          "on-tertiary": "#ffffff",
+          "on-primary-fixed": "#002019",
+          "error": "#ba1a1a",
+          "inverse-primary": "#a0d0c1",
+          "on-secondary-fixed": "#2a1800",
+          "on-secondary": "#ffffff"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-xl": "2.25rem",
+          "space-sm": "0.5rem",
+          "margin": "1.5rem",
+          "gutter-mobile": "0.75rem",
+          "space-lg": "1.5rem",
+          "space-xs": "0.25rem",
+          "gutter": "1rem",
+          "space-md": "1rem",
+          "margin-mobile": "1rem"
+        },
+        "fontFamily": {
+          "body-sm": [
+            "Noto Sans"
+          ],
+          "label-lg": [
+            "Noto Sans"
+          ],
+          "body-md": [
+            "Noto Sans"
+          ],
+          "headline-lg": [
+            "Noto Sans"
+          ],
+          "display-lg-mobile": [
+            "Noto Sans"
+          ],
+          "label-md": [
+            "Noto Sans"
+          ],
+          "display-lg": [
+            "Noto Sans"
+          ],
+          "headline-lg-mobile": [
+            "Noto Sans"
+          ],
+          "headline-md": [
+            "Noto Sans"
+          ],
+          "label-sm": [
+            "Noto Sans"
+          ],
+          "body-lg": [
+            "Noto Sans"
+          ]
+        },
+        "fontSize": {
+          "body-sm": [
+            "14px",
+            {
+              "lineHeight": "20px",
+              "fontWeight": "400"
+            }
+          ],
+          "label-lg": [
+            "16px",
+            {
+              "lineHeight": "22px",
+              "fontWeight": "600"
+            }
+          ],
+          "body-md": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "400"
+            }
+          ],
+          "headline-lg": [
+            "28px",
+            {
+              "lineHeight": "38px",
+              "fontWeight": "600"
+            }
+          ],
+          "display-lg-mobile": [
+            "28px",
+            {
+              "lineHeight": "36px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "700"
+            }
+          ],
+          "label-md": [
+            "14px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "500"
+            }
+          ],
+          "display-lg": [
+            "36px",
+            {
+              "lineHeight": "48px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-lg-mobile": [
+            "22px",
+            {
+              "lineHeight": "30px",
+              "fontWeight": "600"
+            }
+          ],
+          "headline-md": [
+            "20px",
+            {
+              "lineHeight": "28px",
+              "fontWeight": "600"
+            }
+          ],
+          "label-sm": [
+            "12px",
+            {
+              "lineHeight": "16px",
+              "letterSpacing": "0.04em",
+              "fontWeight": "500"
+            }
+          ],
+          "body-lg": [
+            "18px",
+            {
+              "lineHeight": "28px",
+              "fontWeight": "400"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-surface font-body-md text-body-md text-on-surface min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-[1440px] mx-auto px-margin flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center relative"><span class="material-symbols-outlined text-secondary-container text-[28px]">spa</span><div class="w-3 h-3 rounded-full bg-secondary-container absolute -top-1 -right-1 ring-2 ring-surface-container-lowest"></div></div><div class="flex flex-col"><div class="flex items-baseline gap-space-xs"><span class="font-headline-md text-headline-md text-primary font-bold tracking-tight">SahayAI</span><span class="font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed-variant px-space-xs py-0.5 rounded">भारत</span></div><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">सहाय AI - सरल और सुरक्षित बैंकिंग</span></div></div><nav class="hidden lg:flex items-center gap-space-sm" data-active-classes="bg-surface-container text-primary font-bold rounded-xl"><a class="px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:text-on-surface transition-colors min-h-[48px] flex items-center" data-path="products" href="#">उत्पाद / Products</a><a class="px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:text-on-surface transition-colors min-h-[48px] flex items-center" data-path="how-it-works" href="#">यह कैसे काम करता है / How it works</a><a class="px-space-md py-space-sm rounded-xl font-body-lg text-body-lg text-on-surface-variant hover:text-on-surface transition-colors min-h-[48px] flex items-center" data-path="help-and-support" href="#">मदद एवं सहायता / Help &amp; Support</a></nav><div class="flex items-center gap-space-md"><button class="flex items-center gap-space-xs px-space-md py-space-sm rounded-full bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors min-h-[48px]" type="button"><span>हिन्दी ▾</span></button><a class="hidden sm:inline-flex items-center justify-center px-space-lg py-space-sm rounded-full bg-secondary-container text-on-secondary-container font-label-lg text-label-lg hover:bg-secondary-fixed transition-colors min-h-[48px]" data-path="get-started" href="#">शुरू करें / Get Started</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full">
+<!-- Interactive & Personalized Sub-Nav Bar (Home Active Context) -->
+<div class="w-full bg-surface-container-lowest shadow-sm">
+<div class="max-w-[1440px] mx-auto px-margin">
+<!-- Top Micro-Bar: Personalized Context & Dignified Trust Metrics -->
+<div class="py-space-sm flex flex-wrap items-center justify-between gap-space-md border-b-0">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-md py-1.5 rounded-full">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-container animate-pulse"></span>
+<span class="font-label-md text-label-md text-primary font-semibold">नमस्ते, Arjun 👋</span>
+<span class="font-label-sm text-label-sm text-outline px-1.5 py-0.5 bg-surface-container rounded">cust_86838bd208</span>
+</div>
+<div class="hidden sm:flex items-center gap-1.5 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[18px] text-primary">verified_user</span>
+<span>256-Bit सुरक्षित खाता / Bank-Grade Privacy</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center bg-surface-container-low rounded-full p-0.5">
+<button class="px-space-sm py-1 rounded-full bg-primary-container text-on-primary font-label-sm text-label-sm">हिन्दी</button>
+<button class="px-space-sm py-1 rounded-full text-on-surface-variant font-label-sm text-label-sm hover:text-on-surface">English</button>
+</div>
+<div class="flex items-center gap-2 pl-space-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center font-label-sm text-label-sm text-on-secondary-container font-bold shadow-sm">
+              AS
+            </div>
+<span class="font-label-md text-label-md text-primary font-medium hidden md:inline">Arjun Sharma</span>
+</div>
+</div>
+</div>
+<!-- Main Icon-First Navigation Strip (Home Active Underline) -->
+<nav class="flex items-center gap-space-xl overflow-x-auto py-space-sm">
+<a class="relative flex items-center gap-space-xs py-space-sm font-label-lg text-label-lg text-primary font-bold" href="#">
+<span class="material-symbols-outlined text-[22px] text-primary" style="font-variation-settings: 'FILL' 1;">home</span>
+<span>मुख्य पेज / Home</span>
+<!-- Active Gold Pill Underline -->
+<div class="absolute bottom-0 left-0 right-0 h-1 bg-secondary-container rounded-full"></div>
+</a>
+<a class="flex items-center gap-space-xs py-space-sm font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">forum</span>
+<span>बात करें / Talk to Sahaay</span>
+</a>
+<a class="flex items-center gap-space-xs py-space-sm font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">shield_person</span>
+<span>निजता / My Privacy</span>
+</a>
+<a class="flex items-center gap-space-xs py-space-sm font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px]">account_circle</span>
+<span>प्रोफ़ाइल / My Profile</span>
+</a>
+</nav>
+</div>
+</div>
+<!-- Central Column Layout (max-w-4xl / ~860px) -->
+<div class="w-full max-w-[860px] mx-auto px-margin py-space-lg flex flex-col gap-space-lg">
+<!-- 1. BACK AFFORDANCE -->
+<div class="flex items-center justify-between">
+<a class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm hover:bg-surface-container-low transition-all" href="index.html" onclick="if(window.location.pathname.startsWith('/recommendation') || window.location.pathname.startsWith('/onboarding')) this.href='/dashboard';" id="backToDashBtn">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+<span>मुख्य डैशबोर्ड पर वापस जाएं / Back to my dashboard</span>
+</a>
+<div class="hidden sm:flex items-center gap-space-xs text-outline font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">history_edu</span>
+<span>सुझाव कोड / Rec ID: #REC-MF-8821</span>
+</div>
+</div>
+<!-- MAIN RECOMMENDATION CARD -->
+<div class="w-full bg-surface-container-lowest rounded-2xl p-space-lg md:p-space-xl shadow-md flex flex-col gap-space-xl">
+<!-- 2. HEADER BLOCK -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md pb-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-16 h-16 rounded-2xl bg-primary-container flex items-center justify-center text-primary-fixed shadow-sm">
+<span class="material-symbols-outlined text-[36px]">trending_up</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<h1 class="font-headline-lg text-headline-lg text-primary font-bold">Mutual Fund SIP</h1>
+<span class="font-headline-md text-headline-md text-on-surface-variant font-medium">(म्यूचुअल फंड बचत)</span>
+</div>
+<button class="mt-1 inline-flex items-center gap-1.5 text-secondary font-label-md text-label-md hover:underline w-fit" id="audioToggleBtn" type="button">
+<span class="material-symbols-outlined text-[20px] text-secondary">volume_up</span>
+<span id="audioLabel">🔊 सारांश सुनें / Listen to summary (0:42)</span>
+</button>
+</div>
+</div>
+<!-- Confidence & Coverage Badge -->
+<div class="flex flex-col sm:items-end gap-1">
+<div class="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>उच्च विश्वास / High confidence</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">AI Match: 91% • XGBoost Model v4.2</span>
+</div>
+</div>
+<!-- Audio Player Simulator Strip (Hidden by default, triggered by Listen) -->
+<div class="hidden bg-surface-container-low p-space-md rounded-xl flex items-center justify-between gap-space-md" id="audioPlayerStrip">
+<div class="flex items-center gap-space-sm">
+<button class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">pause</span>
+</button>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-primary font-semibold">बोलकर समझाया जा रहा है... / Reading in Hindi</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">प्राकृतिक AI आवाज (सरल बोली)</span>
+</div>
+</div>
+<!-- Animated Equalizer waves -->
+<div class="flex items-end gap-1 h-6">
+<span class="w-1 bg-secondary-container rounded h-3 animate-pulse"></span>
+<span class="w-1 bg-secondary rounded h-6 animate-pulse"></span>
+<span class="w-1 bg-secondary-container rounded h-4 animate-pulse"></span>
+<span class="w-1 bg-primary rounded h-5 animate-pulse"></span>
+<span class="w-1 bg-secondary rounded h-2 animate-pulse"></span>
+</div>
+</div>
+<!-- 3. PLAIN-LANGUAGE SUMMARY HERO -->
+<div class="bg-surface-container-low rounded-2xl p-space-lg relative overflow-hidden">
+<div class="absolute -right-6 -bottom-6 w-32 h-32 bg-secondary-container/15 rounded-full blur-2xl"></div>
+<div class="flex items-start gap-space-md relative z-10">
+<div class="w-10 h-10 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center shrink-0 mt-1 shadow-sm">
+<span class="material-symbols-outlined text-[24px]">lightbulb</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary font-bold">सरल और स्पष्ट सलाह / Plain-Language Summary</span>
+<p class="font-body-lg text-body-lg text-on-surface font-medium leading-relaxed">
+              “आपकी नियमित आय स्थिर है और आप लगातार अच्छी बचत कर रहे हैं। इस समय एक छोटी मासिक बचत शुरू करने से आपका पैसा बेकार पड़े रहने के बजाय सुरक्षित रूप से बढ़ सकता है। इसमें कोई दबाव या जल्दबाजी नहीं है — यह केवल एक सुरक्षित विचार है जो आपके लिए सही काम कर सकता है।”
+            </p>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              “Your income has been steady and you've been saving well. Starting a small monthly investment now could help that money grow over time, instead of sitting idle. There's no pressure — this is just something that could work well for you right now.”
+            </p>
+</div>
+</div>
+</div>
+<!-- Visual Metric Context (Subtle Graph Card) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md p-space-md bg-surface-container rounded-xl">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">औसत मासिक बचत / Avg. Monthly Savings</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">₹ 6,850</span>
+<span class="font-label-sm text-label-sm text-on-tertiary-container">↑ 14% पिछले 3 महीने</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">सुझाई गई मासिक राशि / Suggested SIP</span>
+<span class="font-headline-md text-headline-md text-secondary font-bold">₹ 500 – ₹ 1,000</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">सुविधाजनक और कभी भी रोकें</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">पैसे निकालने की स्वतंत्रता / Liquidity</span>
+<span class="font-headline-md text-headline-md text-primary font-bold">कभी भी निकालें</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">बिना किसी छिपी शर्त के</span>
+</div>
+</div>
+<!-- 4. "WHY WE'RE SUGGESTING THIS" SECTION -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md text-primary font-bold flex items-center gap-space-xs">
+<span>हम यह सुझाव क्यों दे रहे हैं?</span>
+<span class="text-on-surface-variant font-normal">/ Why we're suggesting this</span>
+</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant hidden sm:inline">प्रमाणित बैंकिंग डेटा पर आधारित</span>
+</div>
+<div class="flex flex-col gap-space-md">
+<!-- Card 1: Stable Income Pattern -->
+<div class="p-space-md rounded-xl bg-surface-container-low transition-all">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest text-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[28px]">payments</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-lg text-label-lg text-primary font-bold">आपकी आय स्थिर और नियमित रही है</span>
+<span class="font-label-md text-label-md text-on-surface-variant">/ Your income has been steady</span>
+<span class="font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed-variant px-space-xs py-0.5 rounded">backend: stable_income_pattern</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                    हर महीने के पहले 7 दिनों में प्राथमिक खाते में नियमित क्रेडिट देखा गया है।
+                  </p>
+</div>
+</div>
+<!-- Tooltip interactive trigger -->
+<button class="text-outline hover:text-primary p-1 rounded-full hover:bg-surface-container transition-colors" onclick="toggleTooltip('tooltip-1')" title="विस्तार से समझें / Detailed explanation" type="button">
+<span class="material-symbols-outlined text-[24px]">info</span>
+</button>
+</div>
+<!-- Expanded Tooltip Callout -->
+<div class="mt-space-md pt-space-sm bg-surface-container-lowest p-space-md rounded-lg shadow-sm" id="tooltip-1">
+<div class="flex items-center gap-space-xs text-primary font-label-md text-label-md font-semibold mb-1">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>सत्यापित डेटा विवरण (Data Evidence):</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                पिछले 6 महीनों में आपके बैंक खाते में हर महीने नियमित जमा (औसत ₹28,400) हुआ है। इससे आपकी मासिक घरेलू खर्चों के बाद भी एक सुरक्षित अधिशेष (surplus) बना रहता है।
+              </p>
+</div>
+</div>
+<!-- Card 2: No Active Investment -->
+<div class="p-space-md rounded-xl bg-surface-container-low transition-all">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest text-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[28px]">mark_email_unread</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-lg text-label-lg text-primary font-bold">आपके पास अभी कोई सक्रिय निवेश नहीं है</span>
+<span class="font-label-md text-label-md text-on-surface-variant">/ You don't have an active investment yet</span>
+<span class="font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed-variant px-space-xs py-0.5 rounded">backend: no_active_investment</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                    आपका सारा पैसा बचत खाते में रखा है जहां ब्याज दर महंगाई से कम हो सकती है।
+                  </p>
+</div>
+</div>
+<!-- Tooltip interactive trigger -->
+<button class="text-outline hover:text-primary p-1 rounded-full hover:bg-surface-container transition-colors" onclick="toggleTooltip('tooltip-2')" title="निवेश क्या है? समझें" type="button">
+<span class="material-symbols-outlined text-[24px]">info</span>
+</button>
+</div>
+<!-- Expanded Plain-Language Tooltip Callout -->
+<div class="mt-space-md pt-space-sm bg-surface-container-lowest p-space-md rounded-lg shadow-sm" id="tooltip-2">
+<div class="flex items-center gap-space-xs text-primary font-label-md text-label-md font-semibold mb-1">
+<span class="material-symbols-outlined text-[18px]">help_outline</span>
+<span>निवेश क्या है? (What is an investment?):</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                एक ऐसी बचत जिसमें आपका पैसा समय के साथ सुरक्षित रूप से बढ़ता है, जैसे एक छोटा मासिक बचत प्लान। साधारण बचत खाते में पैसा रखे रहने से उसकी खरीदारी की क्षमता कम होती है, जबकि अनुशासित निवेश में यह धीरे-धीरे बढ़ता है।
+              </p>
+</div>
+</div>
+<!-- Card 3: Positive Savings Trend -->
+<div class="p-space-md rounded-xl bg-surface-container-low transition-all">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest text-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[28px]">query_stats</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-lg text-label-lg text-primary font-bold">आपकी बचत में लगातार सकारात्मक सुधार हुआ है</span>
+<span class="font-label-md text-label-md text-on-surface-variant">/ Your savings have been growing</span>
+<span class="font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed-variant px-space-xs py-0.5 rounded">backend: positive_savings_trend</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+                    महीने के अंत में आपके खाते में पर्याप्त शेष राशि बचती है / Steady month-end surplus balance.
+                  </p>
+</div>
+</div>
+<button class="text-outline hover:text-primary p-1 rounded-full hover:bg-surface-container transition-colors" onclick="toggleTooltip('tooltip-3')" type="button">
+<span class="material-symbols-outlined text-[24px]">info</span>
+</button>
+</div>
+<!-- Expanded Tooltip Callout -->
+<div class="mt-space-md pt-space-sm bg-surface-container-lowest p-space-md rounded-lg shadow-sm" id="tooltip-3">
+<div class="flex items-center gap-space-xs text-primary font-label-md text-label-md font-semibold mb-1">
+<span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+<span>सरप्लस ट्रेंड (Month-End Surplus):</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                पिछले तीन महीनों में हर माह ₹5,000 से अधिक की शेष राशि अगले वेतन चक्र तक अप्रयुक्त रही है। यह दर्शाता है कि ₹500 या ₹1,000 की छोटी बचत आपके सामान्य खर्चों पर कोई प्रतिकूल प्रभाव नहीं डालेगी।
+              </p>
+</div>
+</div>
+</div>
+</div>
+<!-- 5. "HOW CONFIDENT IS THIS SUGGESTION?" SECTION -->
+<div class="flex flex-col gap-space-md">
+<h2 class="font-headline-md text-headline-md text-primary font-bold flex items-center gap-space-xs">
+<span>हम इस सुझाव के बारे में कितने आश्वस्त हैं?</span>
+<span class="text-on-surface-variant font-normal">/ How confident is this suggestion?</span>
+</h2>
+<!-- High Confidence Card (Arjun's primary state) -->
+<div class="p-space-lg rounded-2xl bg-primary-fixed/30 flex flex-col gap-space-md shadow-sm">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[24px]">psychology_alt</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-lg text-label-lg text-primary font-bold">
+                हम इस सुझाव को लेकर पूरी तरह आश्वस्त हैं — आपके हालिया वित्तीय पैटर्न स्पष्ट और सुसंगत हैं।
+              </span>
+<span class="font-body-md text-body-md text-on-surface-variant">
+                "We're highly confident in this — your recent financial patterns are clear and consistent across verified banking transactions."
+              </span>
+</div>
+</div>
+<div class="pt-space-sm flex flex-wrap items-center gap-space-md">
+<div class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-semibold">
+<span class="w-3 h-3 rounded-full bg-primary-container"></span>
+<span>🟢 Verified Transaction History</span>
+</div>
+<div class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-semibold">
+<span class="w-3 h-3 rounded-full bg-primary-container"></span>
+<span>100% Data Coverage</span>
+</div>
+<div class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-semibold">
+<span class="w-3 h-3 rounded-full bg-primary-container"></span>
+<span>Zero Inconsistencies Detected</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 6. PRIMARY ACTIONS -->
+<div class="pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<!-- Left CTA: Primary Solid Teal Button -->
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-space-sm px-space-xl py-4 rounded-full bg-primary-container text-on-primary font-label-lg text-label-lg hover:bg-primary transition-all shadow-md active:scale-95 min-h-[52px]" id="askQuestionCTA" type="button">
+<span class="material-symbols-outlined text-[24px]">chat</span>
+<span>इसके बारे में सवाल पूछें | Ask a question about this 💬</span>
+</button>
+<!-- Right CTA: Clean Text/Ghost Button -->
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-lg py-4 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-colors min-h-[52px]" id="dismissCTA" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+<span>अभी दिलचस्पी नहीं है | Not interested right now</span>
+</button>
+</div>
+</div>
+<!-- 7. ANNOTATED ALTERNATE STATE PANEL & DEVELOPER SPEC -->
+<div class="w-full bg-surface-container-low rounded-2xl p-space-lg shadow-sm flex flex-col gap-space-lg mt-space-md">
+<div class="flex items-center justify-between border-b-0 pb-2">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[22px]">developer_mode_tv</span>
+<span class="font-label-lg text-label-lg text-primary font-bold uppercase tracking-wide">
+            Interactive Architecture &amp; Confidence Variant Spec (2.2 → 2.3 Handoff)
+          </span>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container-highest px-space-xs py-1 rounded text-on-surface">System Documentation</span>
+</div>
+<!-- Live Mockup of Low/Medium Confidence Alternate Variant -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-container"></span>
+<span class="font-label-md text-label-md text-primary font-bold">
+            Alternate State: Medium / Low Confidence Variant (Kavita Persona — Data Coverage Note present)
+          </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          जब बैकएंड <code class="bg-surface-container-highest px-1 rounded font-mono">data_coverage_note != null</code> लौटाता है, तो सेक्शन 5 स्वतः इस प्रकार रूपांतरित (mutate) होता है:
+        </p>
+<!-- Amber Warning/Assistive Container -->
+<div class="p-space-md rounded-xl bg-secondary-fixed/50 flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[28px] shrink-0 mt-0.5">info</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-label-md text-label-md text-on-secondary-fixed font-bold">
+                हम काफी हद तक आश्वस्त हैं, लेकिन आपके कुछ खाते अभी पूरी तरह से जुड़े नहीं हैं।
+              </span>
+<span class="font-body-sm text-body-sm text-on-secondary-fixed-variant">
+                "We're fairly confident, but some of your accounts may not be fully connected yet — connecting them could give us a clearer picture."
+              </span>
+</div>
+</div>
+<!-- Account Aggregator Trigger Button -->
+<button class="shrink-0 inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-primary-container text-on-primary font-label-md text-label-md shadow-sm hover:bg-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">add_link</span>
+<span>🔗 और खाते जोड़ें / Connect more accounts</span>
+</button>
+</div>
+</div>
+<!-- Chat Assistant 2.3 Handoff Payload Visualizer -->
+<div class="flex flex-col gap-space-xs bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-primary font-bold">
+            Chat Assistant (Screen 2.3) Handoff Context Injection Payload
+          </span>
+<span class="font-label-sm text-label-sm text-on-tertiary-container font-semibold">Live State Session Pass</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low font-mono text-[13px] text-primary overflow-x-auto">
+<code>
+            [Context: Intent="ask_about_product", product_id="mutual_fund_sip", confidence=0.91, trigger="recommendation_deep_dive_cta", vernacular_lang="hi-IN"]
+          </code>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+          “इसके बारे में सवाल पूछें” बटन पर क्लिक करने पर चैटबॉट सीधे इस संदर्भ को स्वीकार करता है, ताकि उपयोगकर्ता को अपनी बात दोबारा न समझानी पड़े।
+        </p>
+</div>
+</div>
+<!-- Dismissed Feedback Toast Notification (Hidden by default) -->
+<div class="hidden p-space-md rounded-2xl bg-inverse-surface text-inverse-on-surface shadow-xl flex items-center justify-between gap-space-md transition-all" id="dismissToast">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary-container text-[24px]">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold">सुझाव को शांत किया गया / Recommendation dismissed</span>
+<span class="font-body-sm text-body-sm text-inverse-on-surface/80">डैशबोर्ड पर वापस ले जाया जा रहा है... (Calm State 3C)</span>
+</div>
+</div>
+<button class="text-inverse-on-surface hover:text-white" onclick="document.getElementById('dismissToast').classList.add('hidden')">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+</div>
+<!-- Persistent Floating Assistance Pill (Thumb-Zone Optimized) -->
+<div class="fixed bottom-6 right-6 z-40">
+<button class="flex items-center gap-space-xs px-space-lg py-3 rounded-full bg-secondary-container text-on-secondary-container font-label-lg text-label-lg shadow-xl hover:bg-secondary-fixed active:scale-95 transition-all" id="floatingAssistanceBtn" type="button">
+<span class="material-symbols-outlined text-[24px]">support_agent</span>
+<span class="font-bold">सहायक से बात करें / Talk to a person</span>
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping ml-1"></span>
+</button>
+</div>
+<!-- Client-Side Interaction Logic -->
+<script>
+    
+    function speakHindiSummary() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const text = "आपकी नियमित आय स्थिर है और आप लगातार अच्छी बचत कर रहे हैं। इस समय म्यूचुअल फंड में एक छोटी मासिक बचत शुरू करने से आपका पैसा बेकार पड़े रहने के बजाय सुरक्षित रूप से बढ़ सकता है।";
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'hi-IN';
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+    function stopHindiSummary() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function toggleTooltip(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.toggle('hidden');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Audio button toggle simulation
+      const audioBtn = document.getElementById('audioToggleBtn');
+      const audioStrip = document.getElementById('audioPlayerStrip');
+      const audioLabel = document.getElementById('audioLabel');
+
+      if (audioBtn && audioStrip) {
+        audioBtn.addEventListener('click', () => {
+          if (audioStrip.classList.contains('hidden')) {
+            audioStrip.classList.remove('hidden');
+            audioLabel.textContent = '⏹️ बंद करें / Stop Audio';
+            speakHindiSummary();
+          } else {
+            audioStrip.classList.add('hidden');
+            audioLabel.textContent = '🔊 सारांश सुनें / Listen to summary (0:42)';
+            stopHindiSummary();
+          }
+        });
+      }
+
+      // Dismiss button triggers calm toast & mock redirect
+      const dismissBtn = document.getElementById('dismissCTA');
+      const toast = document.getElementById('dismissToast');
+
+      if (dismissBtn && toast) {
+        dismissBtn.addEventListener('click', () => {
+          toast.classList.remove('hidden');
+          dismissBtn.classList.add('opacity-50', 'pointer-events-none');
+          setTimeout(() => {
+            alert("Redirecting to Dashboard (Screen 2.1) with 3C 'Nothing new today' calm state.");
+          }, 1400);
+        });
+      }
+
+      // Ask question CTA handoff simulation
+      const askBtn = document.getElementById('askQuestionCTA');
+      if (askBtn) {
+        askBtn.addEventListener('click', () => {
+          const chatDrawer = document.getElementById('chatAssistantModal');
+          if (chatDrawer) {
+            chatDrawer.classList.remove('hidden');
+          } else {
+            alert("चैट सहायक सक्रिय: Mutual Fund SIP के संदर्भ में सवाल पूछें\n\n[Intent: ask_about_product | Product: mutual_fund_sip | Confidence: 91%]");
+          }
+        });
+      }
+
+      // Back navigation affordance
+      const backBtn = document.getElementById('backToDashBtn');
+      if (backBtn) {
+        backBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          alert("Navigating back to Screen 2.1 Dashboard via cross-fade transition.");
+        });
+      }
+    });
+  </script>
+</div></main><footer class="w-full bg-surface-container-low mt-space-xl shadow-[0_-1px_8px_rgba(0,0,0,0.02)]"><div class="max-w-[1440px] mx-auto px-margin py-space-xl"><div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg pb-space-xl border-b border-outline-variant/30"><div class="flex flex-col gap-space-sm"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">24x7 निःशुल्क सहायता / National Helpline</span><div class="flex items-center gap-space-sm"><div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary-container"><span class="material-symbols-outlined text-[24px]">support_agent</span></div><span class="font-headline-lg text-headline-lg font-bold text-primary-container tracking-tight">1800-209-7242</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">कॉल करें और अपनी भाषा में सुरक्षित बैंकिंग सहायता प्राप्त करें</p></div><div class="flex flex-col gap-space-sm md:col-span-2"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">विश्वास और सुरक्षा / Trust &amp; Compliance Badges</span><div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md"><div class="p-space-md rounded-xl bg-surface-container-lowest flex items-start gap-space-sm shadow-[0_1px_4px_rgba(0,0,0,0.03)]"><span class="material-symbols-outlined text-primary-container text-[24px]">verified</span><div><div class="font-label-md text-label-md text-on-surface font-semibold">RBI Regulated</div><div class="font-body-sm text-body-sm text-on-surface-variant">Entities Partner</div></div></div><div class="p-space-md rounded-xl bg-surface-container-lowest flex items-start gap-space-sm shadow-[0_1px_4px_rgba(0,0,0,0.03)]"><span class="material-symbols-outlined text-primary-container text-[24px]">lock</span><div><div class="font-label-md text-label-md text-on-surface font-semibold">100% Data in India</div><div class="font-body-sm text-body-sm text-on-surface-variant">Complete Localization</div></div></div><div class="p-space-md rounded-xl bg-surface-container-lowest flex items-start gap-space-sm shadow-[0_1px_4px_rgba(0,0,0,0.03)]"><span class="material-symbols-outlined text-primary-container text-[24px]">gavel</span><div><div class="font-label-md text-label-md text-on-surface font-semibold">DPDP Act 2023</div><div class="font-body-sm text-body-sm text-on-surface-variant">Compliant Privacy</div></div></div></div></div></div><div class="pt-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex flex-wrap items-center gap-space-xs"><span class="font-label-sm text-label-sm text-on-surface-variant mr-space-xs">भाषा चुनें:</span><button class="px-space-sm py-1 rounded-full bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors" type="button">हिन्दी</button><button class="px-space-sm py-1 rounded-full bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors" type="button">বাংলা</button><button class="px-space-sm py-1 rounded-full bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors" type="button">தமிழ்</button><button class="px-space-sm py-1 rounded-full bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors" type="button">తెలుగు</button><button class="px-space-sm py-1 rounded-full bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors" type="button">मराठी</button><button class="px-space-sm py-1 rounded-full bg-surface-container-lowest text-on-surface font-label-sm text-label-sm hover:bg-surface-container transition-colors" type="button">English</button></div><div class="font-body-sm text-body-sm text-on-surface-variant">© 2025 SahayAI Technologies Pvt. Ltd. सर्व अधिकार सुरक्षित।</div></div></div></footer>
+<!-- Live Support Specialist Modal -->
+<div id="supportModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 text-center">
+    <div class="w-14 h-14 bg-emerald-100 text-[#073B30] rounded-full mx-auto flex items-center justify-center text-2xl mb-4">
+      🎧
+    </div>
+    <h3 class="text-lg font-bold text-[#00241C]">सहायक सहायता उपलब्ध है</h3>
+    <p class="text-xs text-amber-800 font-semibold mt-1">Live Human Specialist 24x7</p>
+    <p class="text-sm text-neutral-600 mt-3 leading-relaxed">
+      नमस्ते अर्जुन जी! हमारे वित्तीय सहायक म्यूचुअल फंड और बचत विकल्पों के बारे में हिंदी में आपकी सहायता के लिए तैयार हैं।
+    </p>
+    <div class="mt-6 space-y-2.5">
+      <a href="tel:18002097242" class="block w-full py-3 rounded-xl bg-[#00241C] text-white font-semibold text-sm hover:bg-[#073B30] shadow transition">
+        कॉल करें: 1800-209-7242 (निःशुल्क)
+      </a>
+      <button onclick="document.getElementById('supportModal').classList.add('hidden')" class="w-full py-2.5 rounded-xl border border-neutral-300 text-xs font-semibold text-neutral-700 hover:bg-neutral-50">
+        बंद करें (Close)
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>document.getElementById("floatingAssistanceBtn")?.addEventListener("click", () => document.getElementById("supportModal")?.classList.remove("hidden"));</script>
+</body></html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Sahaay AI — Onboarding: Purpose</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Noto Sans', 'Noto Sans Devanagari', sans-serif;
+      background-color: #f3fbf6;
+      color: #151d1a;
+      -webkit-font-smoothing: antialiased;
+    }
+    @keyframes pulse-ring {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.12); opacity: 0.4; }
+    }
+    .active-purpose-ring {
+      animation: pulse-ring 2.5s infinite ease-in-out;
+    }
+    @keyframes audioWave {
+      0%, 100% { height: 6px; }
+      50% { height: 18px; }
+    }
+    .wave-bar-1 { animation: audioWave 1.1s ease-in-out infinite 0.1s; }
+    .wave-bar-2 { animation: audioWave 0.9s ease-in-out infinite 0.3s; }
+    .wave-bar-3 { animation: audioWave 1.2s ease-in-out infinite 0.2s; }
+    .wave-paused span { animation-play-state: paused !important; }
+  </style>
+</head>
+<body class="bg-[#f3fbf6] min-h-screen flex flex-col justify-between selection:bg-[#ffddb6] selection:text-[#00241c]">
+
+  <!-- Top Header -->
+  <header class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="/app" class="flex items-center gap-3 group focus:outline-none">
+        <div class="w-9 h-9 rounded-full bg-[#00241c] flex items-center justify-center overflow-hidden relative shadow transition-transform group-hover:scale-105">
+          <div class="w-4 h-9 bg-[#ffb54d] absolute left-0 rounded-l-full"></div>
+          <div class="w-2 h-2 rounded-full bg-[#00241c] absolute top-1.5 left-3.5 z-10"></div>
+          <div class="w-2 h-2 rounded-full bg-[#ffb54d] absolute bottom-1.5 right-3.5 z-10"></div>
+        </div>
+        <span class="font-bold text-[22px] tracking-tight text-[#00241c]">Sahaay AI</span>
+      </a>
+
+      <!-- Minimal Language Pill & Exit -->
+      <div class="flex items-center gap-3 sm:gap-4">
+        <div class="flex items-center gap-2 text-xs sm:text-sm text-neutral-600 bg-neutral-100/80 px-3.5 py-1.5 rounded-full border border-neutral-200/60 shadow-xs cursor-pointer hover:bg-neutral-200/60 transition">
+          <span class="font-medium text-neutral-800">हिन्दी</span>
+          <span class="text-neutral-400">|</span>
+          <span class="font-bold text-neutral-900">English</span>
+        </div>
+        <a href="/app" class="text-xs text-neutral-500 hover:text-neutral-800 font-medium px-2 py-1 transition">Exit</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Body Content -->
+  <main class="w-full pt-20 pb-16 bg-[#f3fbf6] flex-grow flex flex-col items-center">
+    <div class="w-full max-w-[1060px] mx-auto px-4 sm:px-6 py-6 flex flex-col items-center">
+
+      <!-- Milestone Step Progress Bar -->
+      <div class="w-full max-w-[720px] my-4 relative flex items-center justify-between px-2">
+        <!-- Connecting Background Line -->
+        <div class="absolute top-6 left-10 right-10 h-[2px] bg-neutral-200 z-0"></div>
+        <!-- Active Progress Line: Filled to Step 3 (~48%) -->
+        <div class="absolute top-6 left-10 w-[48%] h-[2px] bg-[#00241c] z-0 transition-all duration-500"></div>
+
+        <!-- Step 1: name (COMPLETED) -->
+        <div class="flex flex-col items-center z-10 cursor-pointer" onclick="location.href='/onboarding'">
+          <div class="w-11 h-11 rounded-full bg-[#00241c] text-white flex items-center justify-center relative shadow-sm ring-2 ring-emerald-500/20">
+            <span class="material-symbols-outlined text-[20px]">person</span>
+            <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#00241c] rounded-full flex items-center justify-center ring-2 ring-white">
+              <span class="material-symbols-outlined text-[11px] text-white">check</span>
+            </span>
+          </div>
+          <span class="text-xs text-neutral-700 font-medium mt-2">name</span>
+        </div>
+
+        <!-- Step 2: income type (COMPLETED) -->
+        <div class="flex flex-col items-center z-10 cursor-pointer" onclick="location.href='/onboarding/income'">
+          <div class="w-11 h-11 rounded-full bg-[#00241c] text-white flex items-center justify-center relative shadow-sm ring-2 ring-emerald-500/20">
+            <span class="material-symbols-outlined text-[20px]">payments</span>
+            <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#00241c] rounded-full flex items-center justify-center ring-2 ring-white">
+              <span class="material-symbols-outlined text-[11px] text-white">check</span>
+            </span>
+          </div>
+          <span class="text-xs text-neutral-700 font-medium mt-2">income type</span>
+        </div>
+
+        <!-- Step 3: purpose (CURRENT ACTIVE STEP) -->
+        <div class="flex flex-col items-center z-10 relative">
+          <div class="absolute -top-2 flex gap-1 pointer-events-none">
+            <span class="text-[10px] text-[#e5a83b]">✦</span>
+            <span class="text-[10px] text-[#00241c]">•</span>
+          </div>
+          <div class="w-13 h-13 p-1 rounded-full bg-[#ffb54d]/30 flex items-center justify-center shadow-md active-purpose-ring">
+            <div class="w-11 h-11 rounded-full bg-[#ffb54d] text-white flex items-center justify-center shadow">
+              <span class="material-symbols-outlined text-[22px] text-white">adjust</span>
+            </div>
+          </div>
+          <span class="font-bold text-xs text-neutral-900 mt-2">purpose</span>
+          <span class="text-[9px] text-[#845400] font-bold tracking-wide uppercase bg-[#ffddb6] px-1.5 py-0.2 rounded-full mt-0.5">CURRENT</span>
+        </div>
+
+        <!-- Step 4: step 4 (Upcoming) -->
+        <div class="flex flex-col items-center z-10 opacity-60">
+          <div class="w-11 h-11 rounded-full bg-white border border-neutral-300 text-neutral-400 flex items-center justify-center shadow-xs">
+            <span class="material-symbols-outlined text-[20px]">check</span>
+          </div>
+          <span class="text-xs text-neutral-500 font-medium mt-2">step 4</span>
+        </div>
+
+        <!-- Step 5: step 5 (Upcoming) -->
+        <div class="flex flex-col items-center z-10 opacity-60">
+          <div class="w-11 h-11 rounded-full bg-white border border-neutral-300 text-neutral-400 flex items-center justify-center shadow-xs">
+            <span class="material-symbols-outlined text-[20px]">flag</span>
+          </div>
+          <span class="text-xs text-neutral-500 font-medium mt-2">step 5</span>
+        </div>
+      </div>
+
+      <!-- Conversational Heading -->
+      <div class="mt-8 text-center flex flex-col items-center">
+        <div class="inline-flex items-center justify-center gap-2.5 flex-wrap">
+          <h1 id="purposeHeadline" class="text-[26px] sm:text-[30px] font-bold text-[#9e631b] tracking-tight">
+            Namaste Kavita, what brings you here today?
+          </h1>
+          <button id="readAloudBtn" onclick="toggleReadAloud()" class="text-[#9e631b] hover:opacity-80 transition-opacity flex items-center justify-center p-1.5 rounded-full hover:bg-[#ffb54d]/20" title="Read aloud" type="button">
+            <span class="material-symbols-outlined text-[24px]">volume_up</span>
+          </button>
+        </div>
+        <p class="text-sm sm:text-base text-neutral-600 mt-1.5 font-normal">
+          Pick whatever feels right — you can always change this later.
+        </p>
+      </div>
+
+      <!-- 4 Purpose Choice Cards in a Row -->
+      <div class="w-full mt-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-end" role="radiogroup">
+
+          <!-- Card 1: Loan (with House Icon) -->
+          <div id="card-loan" onclick="selectPurpose('loan')" class="purpose-card bg-white rounded-2xl p-7 border border-neutral-200/90 shadow-sm flex flex-col items-center text-center cursor-pointer hover:shadow-md transition-all min-h-[260px] justify-center" role="radio" tabindex="0">
+            <div class="purpose-icon w-14 h-14 flex items-center justify-center text-neutral-800 mb-5">
+              <svg class="w-11 h-11 stroke-current fill-none stroke-[1.75]" viewBox="0 0 24 24">
+                <path d="M3 10.5L12 3l9 7.5v9.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-9.5z"></path>
+                <path d="M9 21V12h6v9"></path>
+              </svg>
+            </div>
+            <h3 class="purpose-title text-lg font-bold text-neutral-900">Loan</h3>
+            <p class="purpose-desc text-sm text-neutral-500 mt-2 leading-snug">Money to buy or build something</p>
+          </div>
+
+          <!-- Card 2: Grow my savings (SELECTED State with Seedling/Leaf Icon) -->
+          <div id="card-savings-wrapper" class="flex flex-col items-center w-full">
+            <span id="savingsSelectedTag" class="text-[11px] font-bold tracking-wider text-neutral-800 mb-1.5 uppercase">SELECTED</span>
+            <div id="card-savings" onclick="selectPurpose('savings')" class="purpose-card w-full bg-[#00241c] text-white rounded-2xl p-7 shadow-lg flex flex-col items-center text-center cursor-pointer ring-2 ring-[#00241c] min-h-[260px] justify-center transition-all" role="radio" tabindex="0" aria-checked="true">
+              <div class="purpose-icon w-14 h-14 flex items-center justify-center text-white mb-5">
+                <svg class="w-11 h-11 stroke-current fill-none stroke-[1.75] stroke-linecap-round stroke-linejoin-round" viewBox="0 0 24 24">
+                  <path d="M11 20A7 7 0 0 1 4 13"></path>
+                  <path d="M2 13h4"></path>
+                  <path d="M12 11c0-4 4-7 8-7-1 4-4 7-8 7z"></path>
+                  <path d="M16 11c0-3 3-5 6-5-1 3-3 5-6 5z"></path>
+                  <path d="M12 11v9"></path>
+                  <path d="M7 16c2 1 5 1 7-1"></path>
+                </svg>
+              </div>
+              <h3 class="purpose-title text-lg font-bold text-white">Grow my savings</h3>
+              <p class="purpose-desc text-sm text-neutral-200 mt-2 leading-snug">Make my money grow safely</p>
+            </div>
+          </div>
+
+          <!-- Card 3: Protect my family (with Umbrella Icon) -->
+          <div id="card-protect" onclick="selectPurpose('protect')" class="purpose-card bg-white rounded-2xl p-7 border border-neutral-200/90 shadow-sm flex flex-col items-center text-center cursor-pointer hover:shadow-md transition-all min-h-[260px] justify-center" role="radio" tabindex="0">
+            <div class="purpose-icon w-14 h-14 flex items-center justify-center text-neutral-800 mb-5">
+              <svg class="w-11 h-11 stroke-current fill-none stroke-[1.75] stroke-linecap-round stroke-linejoin-round" viewBox="0 0 24 24">
+                <path d="M12 2v2"></path>
+                <path d="M12 4a9 9 0 0 0-9 9c0 .6.4 1 1 1h16c.6 0 1-.4 1-1a9 9 0 0 0-9-9z"></path>
+                <path d="M12 14v5a2 2 0 1 1-4 0"></path>
+              </svg>
+            </div>
+            <h3 class="purpose-title text-lg font-bold text-neutral-900">Protect my family</h3>
+            <p class="purpose-desc text-sm text-neutral-500 mt-2 leading-snug">Cover for illness or accidents</p>
+          </div>
+
+          <!-- Card 4: Not sure yet (with Question Mark Circle Icon and Dashed Border) -->
+          <div id="card-notsure" onclick="selectPurpose('notsure')" class="purpose-card bg-white rounded-2xl p-7 border-2 border-dashed border-neutral-300 shadow-sm flex flex-col items-center text-center cursor-pointer hover:bg-neutral-50/50 transition-all min-h-[260px] justify-center" role="radio" tabindex="0">
+            <div class="purpose-icon w-14 h-14 flex items-center justify-center text-neutral-800 mb-5">
+              <svg class="w-11 h-11 stroke-current fill-none stroke-[1.75] stroke-linecap-round stroke-linejoin-round" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <circle cx="12" cy="17" fill="currentColor" r=".5"></circle>
+              </svg>
+            </div>
+            <h3 class="purpose-title text-lg font-bold text-neutral-900">Not sure yet</h3>
+            <p class="purpose-desc text-sm text-neutral-500 mt-2 leading-snug">Help me figure this out</p>
+          </div>
+
+        </div>
+
+        <!-- Supportive Quote -->
+        <div class="mt-8 text-center text-sm text-neutral-700 font-medium italic">
+          “That's okay — most people aren't sure at first”
+        </div>
+
+        <!-- Primary Golden 'Next' Button Action -->
+        <div class="mt-8 w-full flex flex-col items-center gap-3">
+          <button id="nextBtn" onclick="handlePurposeSubmit()" class="w-full max-w-[480px] py-3.5 px-6 rounded-xl bg-[#e5a83b] hover:bg-[#d99525] text-neutral-900 font-semibold text-lg shadow-sm hover:shadow transition-all text-center focus:outline-none focus:ring-4 focus:ring-[#ffb54d]/40 active:scale-[0.99]" type="button">
+            Next
+          </button>
+          <div class="flex items-center justify-center gap-1.5 text-xs text-neutral-600">
+            <span class="material-symbols-outlined text-[15px] text-neutral-700">lock</span>
+            <span>Your information stays private and secure</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Persistent Floating Pill: Talk to a person (Bottom-Right) -->
+  <div class="fixed bottom-6 right-6 z-40">
+    <button onclick="openPersonHelp()" class="flex items-center gap-2.5 px-5 py-3 rounded-full bg-white hover:bg-neutral-50 text-neutral-900 shadow-lg border border-neutral-200/80 transition-transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#00241c]" type="button">
+      <span class="material-symbols-outlined text-[20px] text-neutral-800">headset_mic</span>
+      <span class="font-medium text-sm">Talk to a person</span>
+    </button>
+  </div>
+
+  <!-- Person Help Modal -->
+  <div id="personHelpModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-[#00241c]/20 overflow-hidden text-center p-6 sm:p-8">
+      <div class="w-16 h-16 rounded-full bg-[#ffddb6] text-[#845400] mx-auto flex items-center justify-center mb-4">
+        <span class="material-symbols-outlined text-3xl">support_agent</span>
+      </div>
+      <h3 class="text-xl font-bold text-[#00241c] mb-2">Connect with a Sahaay Specialist</h3>
+      <p class="text-sm text-neutral-600 mb-6">
+        Our vernacular banking advisors are available 24x7 to assist you in your native language.
+      </p>
+      <div class="space-y-3">
+        <a href="tel:+19962763889" class="block w-full py-3 rounded-xl bg-[#00241c] text-white font-semibold text-sm hover:bg-[#073b30] shadow transition">
+          Call Now: +1 996 276 3889
+        </a>
+        <button onclick="closePersonHelp()" class="w-full py-2.5 rounded-xl border border-neutral-300 text-xs font-semibold text-neutral-700 hover:bg-neutral-50">
+          Dismiss
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3 Completion Feedback Modal -->
+  <div id="purposeSuccessModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-[#00241c]/20 overflow-hidden text-center p-6 sm:p-8">
+      <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center mb-4">
+        <span class="material-symbols-outlined text-3xl">check_circle</span>
+      </div>
+      <h3 class="text-xl font-bold text-[#00241c] mb-2">Purpose Selected!</h3>
+      <p class="text-sm text-neutral-600 mb-6" id="purposeFeedbackMsg">
+        Great choice, Kavita! Step 3 (COLLECT_PURPOSE) is saved. Moving to Step 4 (Confirmation).
+      </p>
+      <div class="flex gap-3">
+        <button onclick="location.reload()" class="flex-1 py-2.5 rounded-xl border border-neutral-300 text-xs font-semibold text-neutral-700">Review</button>
+        <a href="onboarding-confirm.html" onclick="if(window.location.pathname.startsWith('/onboarding')) this.href='/onboarding/confirm';" class="flex-1 py-2.5 rounded-xl bg-[#00241c] text-white text-xs font-semibold hover:bg-[#073b30] flex items-center justify-center">Continue to Step 4 &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client Script for Card Selection, Speech, & Submission -->
+  <script>
+    let selectedPurpose = 'savings';
+
+    function selectPurpose(type) {
+      selectedPurpose = type;
+
+      const allTypes = ['loan', 'savings', 'protect', 'notsure'];
+      allTypes.forEach(t => {
+        const card = document.getElementById(`card-${t}`);
+        if (!card) return;
+
+        const title = card.querySelector('.purpose-title');
+        const desc = card.querySelector('.purpose-desc');
+        const icon = card.querySelector('.purpose-icon');
+
+        if (t === type) {
+          card.className = 'purpose-card w-full bg-[#00241c] text-white rounded-2xl p-7 shadow-lg flex flex-col items-center text-center cursor-pointer ring-2 ring-[#00241c] min-h-[260px] justify-center transition-all';
+          card.setAttribute('aria-checked', 'true');
+          if (title) title.className = 'purpose-title text-lg font-bold text-white';
+          if (desc) desc.className = 'purpose-desc text-sm text-neutral-200 mt-2 leading-snug';
+          if (icon) icon.className = 'purpose-icon w-14 h-14 flex items-center justify-center text-white mb-5';
+        } else {
+          card.className = t === 'notsure'
+            ? 'purpose-card bg-white rounded-2xl p-7 border-2 border-dashed border-neutral-300 shadow-sm flex flex-col items-center text-center cursor-pointer hover:bg-neutral-50/50 transition-all min-h-[260px] justify-center'
+            : 'purpose-card bg-white rounded-2xl p-7 border border-neutral-200/90 shadow-sm flex flex-col items-center text-center cursor-pointer hover:shadow-md transition-all min-h-[260px] justify-center';
+          card.setAttribute('aria-checked', 'false');
+          if (title) title.className = 'purpose-title text-lg font-bold text-neutral-900';
+          if (desc) desc.className = 'purpose-desc text-sm text-neutral-500 mt-2 leading-snug';
+          if (icon) icon.className = 'purpose-icon w-14 h-14 flex items-center justify-center text-neutral-800 mb-5';
+        }
+      });
+
+      // Update the SELECTED tag label position
+      const savingsTag = document.getElementById('savingsSelectedTag');
+      if (savingsTag) {
+        savingsTag.innerText = type === 'savings' ? 'SELECTED' : '';
+      }
+    }
+
+    function toggleReadAloud() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const text = "Namaste Kavita, what brings you here today? Pick whatever feels right — you can always change this later.";
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-IN';
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert("Audio playback not supported in this browser.");
+      }
+    }
+
+    function handlePurposeSubmit() {
+      const btn = document.getElementById('nextBtn');
+      const originalText = btn.innerText;
+      btn.innerText = 'Saving...';
+      btn.classList.add('opacity-70', 'pointer-events-none');
+
+      fetch('/onboarding/cust_demo/step', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Role': 'user'
+        },
+        body: JSON.stringify({ input: selectedPurpose })
+      }).then(r => r.json()).catch(() => ({})).finally(() => {
+        setTimeout(() => {
+          btn.innerText = originalText;
+          btn.classList.remove('opacity-70', 'pointer-events-none');
+          
+          const modal = document.getElementById('purposeSuccessModal');
+          if (modal) modal.classList.remove('hidden');
+        }, 600);
+      });
+    }
+
+    function openPersonHelp() {
+      const m = document.getElementById('personHelpModal');
+      if (m) m.classList.remove('hidden');
+    }
+
+    function closePersonHelp() {
+      const m = document.getElementById('personHelpModal');
+      if (m) m.classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

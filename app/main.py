@@ -529,31 +529,146 @@ def advance_onboarding(customer_id: str, req: OnboardingStepRequest):
 
 
 # ==============================================================================
-# INTERNAL VERIFICATION SCAFFOLD ONLY — NOT PRODUCTION FRONTEND
+# ONBOARDING ENDPOINT ALIASES (Thin forwarding to Section 5 handlers)
 # ==============================================================================
-# The /dashboard and /app endpoints below serve a lightweight internal HTML/JS
-# scaffold for local smoke-testing and developer verification during hackathon
-# building. The production UI is built, deployed, and maintained separately by
-# the frontend team in their own repository. Do NOT mistake this for the real UI!
-# ==============================================================================
+@app.get("/onboarding/{customer_id}/state", include_in_schema=False)
+def get_onboarding_state_alias(customer_id: str):
+    """Thin alias for /customers/{customer_id}/onboarding-state."""
+    return get_onboarding_state(customer_id)
 
+
+@app.post("/onboarding/{customer_id}/step", include_in_schema=False)
+def advance_onboarding_alias(customer_id: str, req: OnboardingStepRequest):
+    """Thin alias for /customers/{customer_id}/onboarding-step."""
+    return advance_onboarding(customer_id, req)
+
+
+# ==============================================================================
+# PRODUCTION FRONTEND SERVING & CANONICAL ROUTE MOUNTING
+# ==============================================================================
 _FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend", "public")
-_INDEX_HTML = os.path.join(_FRONTEND_DIR, "index.html")
+_CSS_DIR = os.path.join(_FRONTEND_DIR, "css")
 
 if os.path.exists(_FRONTEND_DIR):
     app.mount("/static", StaticFiles(directory=_FRONTEND_DIR), name="static")
+if os.path.exists(_CSS_DIR):
+    app.mount("/css", StaticFiles(directory=_CSS_DIR), name="css")
+
+
+def serve_html(filename: str) -> HTMLResponse:
+    """Helper to serve static HTML pages safely from the frontend public directory."""
+    filepath = os.path.join(_FRONTEND_DIR, filename)
+    if os.path.exists(filepath):
+        with open(filepath, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read(), status_code=200)
+    raise HTTPException(status_code=404, detail=f"Page '{filename}' not found.")
+
+
+# Canonical Page Routes
+@app.get("/", response_class=HTMLResponse)
+def page_home():
+    """Customer Portal Homepage (app.html)."""
+    return serve_html("app.html")
 
 
 @app.get("/dashboard", response_class=HTMLResponse)
-@app.get("/app", response_class=HTMLResponse)
-def serve_dashboard():
-    """
-    [INTERNAL VERIFICATION SCAFFOLD ONLY — NOT PRODUCTION FRONTEND]
-    Serves the internal verification scaffold for developer sanity checks.
-    The real production UI is hosted in a separate frontend repository.
-    """
-    if os.path.exists(_INDEX_HTML):
-        with open(_INDEX_HTML, "r", encoding="utf-8") as f:
-            return HTMLResponse(content=f.read())
-    return HTMLResponse("<h2>Frontend verification scaffold not built. Real production frontend is in separate repo.</h2>")
+def page_dashboard():
+    """Decision Sandbox & Intelligence Telemetry Dashboard (dashboard.html)."""
+    return serve_html("dashboard.html")
+
+
+@app.get("/chat", response_class=HTMLResponse)
+def page_chat():
+    """Vernacular Conversational AI Assistant (chat-assistant.html)."""
+    return serve_html("chat-assistant.html")
+
+
+@app.get("/onboarding/name", response_class=HTMLResponse)
+def page_onboarding_name():
+    """Onboarding Step 1: Collect Name (onboarding.html)."""
+    return serve_html("onboarding.html")
+
+
+@app.get("/onboarding/income", response_class=HTMLResponse)
+def page_onboarding_income():
+    """Onboarding Step 2: Income Type (onboarding-income.html)."""
+    return serve_html("onboarding-income.html")
+
+
+@app.get("/onboarding/purpose", response_class=HTMLResponse)
+def page_onboarding_purpose():
+    """Onboarding Step 3: Purpose Selection (onboarding-purpose.html)."""
+    return serve_html("onboarding-purpose.html")
+
+
+@app.get("/onboarding/confirm", response_class=HTMLResponse)
+def page_onboarding_confirm():
+    """Onboarding Step 4: Confirmation & Summary (onboarding-confirm.html)."""
+    return serve_html("onboarding-confirm.html")
+
+
+@app.get("/onboarding/completed", response_class=HTMLResponse)
+def page_onboarding_completed():
+    """Onboarding Step 5: Completion & Celebration (onboarding-completed.html)."""
+    return serve_html("onboarding-completed.html")
+
+
+@app.get("/recommendation/detail", response_class=HTMLResponse)
+def page_recommendation_detail():
+    """Recommendation Deep-Dive View (recommendation-detail.html)."""
+    return serve_html("recommendation-detail.html")
+
+
+@app.get("/profile", response_class=HTMLResponse)
+def page_profile():
+    """Customer Profile & 10-Language Settings (profile.html)."""
+    return serve_html("profile.html")
+
+
+@app.get("/cross-cutting-states", response_class=HTMLResponse)
+def page_cross_cutting_states():
+    """Cross-cutting UI states: Skeleton & gentle error recovery (cross-cutting-states.html)."""
+    return serve_html("cross-cutting-states.html")
+
+
+# Whitelisted Stitch UI Reference Frames
+STITCH_PAGE_WHITELIST: Dict[str, str] = {
+    "privacy": "stitch_privacy_consent.html",
+    "chat": "stitch_chat_assistant.html",
+    "cross-cutting": "stitch_cross_cutting_states.html",
+    "onboarding-completed": "stitch_onboarding_completed.html",
+    "onboarding-confirm": "stitch_onboarding_confirm.html",
+    "onboarding-income": "stitch_onboarding_income.html",
+    "onboarding-name": "stitch_onboarding_name.html",
+    "onboarding-purpose": "stitch_onboarding_purpose.html",
+    "profile": "stitch_profile_settings.html",
+    "recommendation": "stitch_recommendation_detail.html",
+    "master": "stitch.html",
+}
+
+
+@app.get("/stitch/{page}", response_class=HTMLResponse)
+def page_stitch_whitelisted(page: str):
+    """Serves 1:1 Stitch design system frames validated against an explicit whitelist."""
+    normalized_key = page.lower().replace(".html", "").replace("_", "-")
+    target_file = STITCH_PAGE_WHITELIST.get(normalized_key)
+    if not target_file:
+        raise HTTPException(status_code=404, detail=f"Stitch design frame '{page}' not found or not in allowed list.")
+    return serve_html(target_file)
+
+
+# Legacy continuity redirects (clean redirects, not duplicate handlers)
+@app.get("/app", include_in_schema=False)
+def redirect_app():
+    return RedirectResponse(url="/", status_code=307)
+
+
+@app.get("/onboarding", include_in_schema=False)
+def redirect_onboarding():
+    return RedirectResponse(url="/onboarding/name", status_code=307)
+
+
+@app.get("/recommendation", include_in_schema=False)
+def redirect_recommendation():
+    return RedirectResponse(url="/recommendation/detail", status_code=307)
 
